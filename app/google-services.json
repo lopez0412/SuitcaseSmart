@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "628666607440",
+    "project_id": "suitcasesmart",
+    "storage_bucket": "suitcasesmart.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:628666607440:android:2b882bc317a5fc902dae55",
+        "android_client_info": {
+          "package_name": "com.loptech.suitcasesmart"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "628666607440-8rtjv3rle6sm3k11jq8cmh451v70nt6m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.loptech.suitcasesmart",
+            "certificate_hash": "dd666fea2eb43674c26b1ae22d983f940b627b98"
+          }
+        },
+        {
+          "client_id": "628666607440-8ibomeeb4v85t1jrn0hml3gsjk168h9l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBwLC84dp7bGVWybBvshaSrirvU-EVP7FM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "628666607440-8ibomeeb4v85t1jrn0hml3gsjk168h9l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

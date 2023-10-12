@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">SuitcaseSmart</string>
+    <string name="title_activity_main2">MainActivity2</string>
+    <string name="default_web_client_id">628666607440-8ibomeeb4v85t1jrn0hml3gsjk168h9l.apps.googleusercontent.com</string>
+    <string name="error_input_empty">Los campos no deben estar vacios</string>
+    <string name="error_not_a_valid_email">Por favor Ingresa un Email Valido</string>
+    <string name="error_not_a_valid_phone_number">Por favor ingresa un Email Valido</string>
+    <string name="error_incorrectly_repeated_password">El Email no Coincide</string>
+    <string name="error_invalid_credentials">El Email o la contraseña no son correctas</string>
+    <string name="success_registration">Usuario registrado con Exito</string>
+    <string name="success_login">Inicio de sesion exitoso</string>
+    <string name="error_unknown">Un error desconocido ha ocurrido</string>
+    <string name="preferences">SuitcasePrefs</string>
+    <string name="error_user_signin">Credenciales incorrectas o el usuario no existe</string>
+    <string name="error_al_ingresar">Error al ingresar</string>
+    <string name="register_error_message">Error al registrar el usuario, revisa si el usuario ya existe</string>
+    <string name="msg_token_fmt">Este es el token del dispositivo</string>
+
+
+</resources>
