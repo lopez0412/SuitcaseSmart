@@ -1,6 +1,5 @@
 package com.loptech.suitcasesmart
 
-import android.app.Application
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -8,38 +7,35 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.IntentSenderRequest
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.iid.FirebaseInstanceIdReceiver
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.remoteconfig.ktx.remoteConfig
+import com.google.firebase.remoteconfig.remoteConfigSettings
 import com.loptech.suitcasesmart.firebase.GoogleAuthUiClient
-import com.loptech.suitcasesmart.firebase.SignInviewModel
+import com.loptech.suitcasesmart.usecases.login.SignInviewModel
 import com.loptech.suitcasesmart.navigation.AppScreens
-import com.loptech.suitcasesmart.ui.theme.MainAccent
 import com.loptech.suitcasesmart.ui.theme.SuitcaseSmartTheme
+import com.loptech.suitcasesmart.usecases.home.HomeScreen
+import com.loptech.suitcasesmart.usecases.home.HomeViewModel
 import com.loptech.suitcasesmart.usecases.launch.SplashScreen
 import com.loptech.suitcasesmart.usecases.login.LoginScreen
-import com.loptech.suitcasesmart.usecases.login.ProfileScreen
+import com.loptech.suitcasesmart.usecases.profile.ProfileScreen
 import com.loptech.suitcasesmart.usecases.onboarding.OnboardScreen
 import com.loptech.suitcasesmart.usecases.registration.RegisterViewModel
 import com.loptech.suitcasesmart.usecases.registration.RegistrationScreen
@@ -59,6 +55,7 @@ class MainActivity : ComponentActivity() {
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         //lanza evento inicial.
         //analytics = Firebase.analytics
 
@@ -68,7 +65,16 @@ class MainActivity : ComponentActivity() {
         //bundle.putString("message", "Integracion de analytics completa!!")
         //analytics.logEvent("InitScreen", bundle)
 
-        notification()
+        //notification()
+
+        //Remote Config
+        val configSettings = remoteConfigSettings{
+            minimumFetchIntervalInSeconds = 60 // 3600
+        }
+        val firebaseConfig = Firebase.remoteConfig
+        firebaseConfig.setConfigSettingsAsync(configSettings)
+        firebaseConfig.setDefaultsAsync(mapOf("show_error_btn" to false))
+
 
         setContent {
             SuitcaseSmartTheme {
@@ -79,16 +85,19 @@ class MainActivity : ComponentActivity() {
                 ) {
                     val navController = rememberNavController()
                     NavHost(navController = navController, startDestination = AppScreens.SplashScreen.route){
+                        //MARK: LoginScreen composable
                         composable(AppScreens.LoginScreen.route){
                             val viewModel = viewModel<SignInviewModel>()
                             val state by viewModel.state.collectAsState()
 
+                            //confirm if user is logged in and send to Home Screen
                             LaunchedEffect(key1 = Unit ){
                                 if (googleAuthUiClient.getSignedInUser() != null){
-                                    navController.navigate(AppScreens.ProfileScreen.route)
+                                    navController.navigate(AppScreens.HomeScreen.route)
                                 }
-                            }
+                            }//:LaunchedEffect
 
+                            // launcher for sign in
                             val launcher = rememberLauncherForActivityResult(
                                 contract = ActivityResultContracts.StartIntentSenderForResult(),
                                 onResult = {result ->
@@ -103,6 +112,7 @@ class MainActivity : ComponentActivity() {
                                 }
                             )//: Launcher
 
+                            //LaunchedEffect triggered by successful signin
                             LaunchedEffect(key1 = state.isSignInSuccessful){
                                 if (state.isSignInSuccessful){
                                    Toast.makeText(
@@ -110,12 +120,12 @@ class MainActivity : ComponentActivity() {
                                        "Sign in successful",
                                        Toast.LENGTH_LONG
                                    ).show()
-
-                                    navController.navigate(AppScreens.ProfileScreen.route)
+                                    navController.navigate(AppScreens.HomeScreen.route)
                                     viewModel.resetState()
                                 }
-                            }
+                            }//:LaunchedEffect
 
+                            //Login Screen .
                             LoginScreen(
                                 state = state,
                                 onLogin = viewModel::login,
@@ -125,7 +135,7 @@ class MainActivity : ComponentActivity() {
                                 onDismissDialog = viewModel::hideErrorDialog,
                                 onSignInClick = {
                                     lifecycleScope.launch {
-                                        Log.d("Click", "Clicking the button")
+                                        //Log.d("Click", "Clicking the button")
                                         val signInIntentSender = googleAuthUiClient.signIn()
                                         launcher.launch(
                                             IntentSenderRequest.Builder(
@@ -139,7 +149,7 @@ class MainActivity : ComponentActivity() {
 
                         }//: composable sign in
 
-                        //composable profile
+                        //MARK: composable profile
                         composable(
                             AppScreens.ProfileScreen.route
                         ){
@@ -157,19 +167,19 @@ class MainActivity : ComponentActivity() {
                                         }
                                     })
                             }
-                        }
+                        }//: Profile Screen
 
-                        //Splash Screen
+                        //MARK: Splash Screen
                         composable(AppScreens.SplashScreen.route) {
                             SplashScreen(navController)
                         }//:Splash
                         
-                        // Onboarding Screen
+                        //MARK: Onboarding Screen
                         composable(AppScreens.OnboardingScreen.route){
                             OnboardScreen(navController = navController)
                         }//:Onboarding Screen
 
-                        //Register Screen
+                        //MARK: Register Screen
                         composable(AppScreens.RegisterScreen.route){
                             val viewModel: RegisterViewModel = viewModel()
                             val state by viewModel.state.collectAsState()
@@ -193,7 +203,34 @@ class MainActivity : ComponentActivity() {
                                 onBack = { navController.popBackStack() },
                                 onDismissDialog = viewModel::hideErrorDialog
                             )
-                        }
+                        }//: Register Screen
+
+
+                        //MARK: Home Screen composable.
+                        composable(
+                            AppScreens.HomeScreen.route
+                        ){
+                            val viewModel = viewModel<HomeViewModel>()
+                            val state by viewModel.status.collectAsState()
+
+                            googleAuthUiClient.getSignedInUser()?.let { it1 ->
+                                HomeScreen(
+                                    userData = it1,
+                                    state = state,
+                                    viewmodel = viewModel,
+                                    onsignOut = {
+                                        lifecycleScope.launch {
+                                            googleAuthUiClient.signOut()
+                                            Toast.makeText(applicationContext,
+                                                "Signed Out",
+                                                Toast.LENGTH_LONG).show()
+
+                                            navController.popBackStack()
+                                        }
+                                    })
+                            }
+                        }//: Home Screen
+
                     }
                 }
             }

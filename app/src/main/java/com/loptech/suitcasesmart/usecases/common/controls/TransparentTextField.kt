@@ -1,6 +1,5 @@
-package com.loptech.suitcasesmart.usecases.common.views
+package com.loptech.suitcasesmart.usecases.common.controls
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -21,8 +20,6 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
-import com.loptech.suitcasesmart.ui.theme.MainAccent
-import com.loptech.suitcasesmart.ui.theme.MainGrey
 import com.loptech.suitcasesmart.ui.theme.MainGrey20
 
 @OptIn(ExperimentalMaterial3Api::class)

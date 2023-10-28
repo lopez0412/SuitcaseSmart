@@ -1,17 +1,14 @@
-package com.loptech.suitcasesmart.firebase
+package com.loptech.suitcasesmart.usecases.login
 
-import android.content.Context
-import android.util.Log
 import android.util.Patterns
-import android.widget.Toast
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.loptech.suitcasesmart.R
+import com.loptech.suitcasesmart.model.domain.SignInState
+import com.loptech.suitcasesmart.model.domain.SignInresult
+import com.loptech.suitcasesmart.usecases.home.ProviderType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -29,7 +26,8 @@ class SignInviewModel: ViewModel(){
     fun onSignInresult(result: SignInresult){
         _state.update { it.copy(
             isSignInSuccessful = result.data != null,
-            signInError = result.errorMessage
+            signInError = result.errorMessage,
+            providerType = ProviderType.GOOGLE
         ) }
     }
 
@@ -66,7 +64,8 @@ class SignInviewModel: ViewModel(){
                         _state.update {
                             it.copy(
                                 displayProgressBar = false,
-                                isSignInSuccessful = true)
+                                isSignInSuccessful = true,
+                                providerType = ProviderType.BASIC)
                         }
                     } else {
                         _state.update {

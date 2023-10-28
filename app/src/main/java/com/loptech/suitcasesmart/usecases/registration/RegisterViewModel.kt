@@ -1,19 +1,12 @@
 package com.loptech.suitcasesmart.usecases.registration
 
-import android.util.Log
 import android.util.Patterns
-import android.widget.Toast
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.loptech.suitcasesmart.R
-import com.loptech.suitcasesmart.firebase.FirebaseAuthActivity
-import com.loptech.suitcasesmart.firebase.SignInState
 import com.loptech.suitcasesmart.model.domain.RegisterState
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

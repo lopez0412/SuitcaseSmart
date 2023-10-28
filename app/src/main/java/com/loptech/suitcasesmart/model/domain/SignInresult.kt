@@ -1,4 +1,4 @@
-package com.loptech.suitcasesmart.firebase
+package com.loptech.suitcasesmart.model.domain
 
 import androidx.annotation.StringRes
 

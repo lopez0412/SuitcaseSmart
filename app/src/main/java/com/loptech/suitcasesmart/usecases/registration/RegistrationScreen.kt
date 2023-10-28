@@ -9,14 +9,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -29,7 +27,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -39,17 +36,13 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.loptech.suitcasesmart.R
 import com.loptech.suitcasesmart.model.domain.RegisterState
-import com.loptech.suitcasesmart.ui.theme.FACEBOOKCOLOR
-import com.loptech.suitcasesmart.ui.theme.GMAILCOLOR
 import com.loptech.suitcasesmart.usecases.common.views.EventDialog
-import com.loptech.suitcasesmart.usecases.common.views.RoundedButton
-import com.loptech.suitcasesmart.usecases.common.views.SocialMediaButton
-import com.loptech.suitcasesmart.usecases.common.views.TransparentTextField
+import com.loptech.suitcasesmart.usecases.common.controls.RoundedButton
+import com.loptech.suitcasesmart.usecases.common.controls.TransparentTextField
 import kotlin.reflect.KFunction4
 
 @Composable

@@ -1,4 +1,4 @@
-package com.loptech.suitcasesmart.usecases.common.views
+package com.loptech.suitcasesmart.usecases.common.controls
 
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size

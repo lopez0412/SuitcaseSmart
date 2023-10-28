@@ -15,6 +15,7 @@
     <string name="error_al_ingresar">Error al ingresar</string>
     <string name="register_error_message">Error al registrar el usuario, revisa si el usuario ya existe</string>
     <string name="msg_token_fmt">Este es el token del dispositivo</string>
+    <string name="error_al_crear_viaje">Error al crear viaje</string>
 
 
 </resources>

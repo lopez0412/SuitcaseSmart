@@ -89,15 +89,15 @@ fun OnboardScreen(navController: NavHostController) {
 
 val onboardPagesList = listOf(
     OnBoardingData(
-        image = androidx.core.R.drawable.ic_call_answer,
+        image = R.drawable.suitcase,
         title = "Bienvenid@s a SuitcaseSmart",
         description = "Bienvenid@ a SuitcaseSmart la app que te ayuda a ordenar tu maleta y tu viaje."
     ), OnBoardingData(
-        image = androidx.core.R.drawable.ic_call_answer,
+        image = R.drawable.suitcase,
         title = "Primero Inicia Sesion o Registrate",
         description = "Para poder tener la mejor experiencia es necesario iniciar sesion "
     ), OnBoardingData(
-        image = androidx.core.R.drawable.ic_call_answer,
+        image = R.drawable.suitcase,
         title = "Listo",
         description = "Primero Crea tu viaje, salida, destino, agrega tus maletas y por ultimo agrega tu equipaje."
     )

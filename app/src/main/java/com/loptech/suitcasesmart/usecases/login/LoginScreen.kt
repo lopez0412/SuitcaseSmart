@@ -1,6 +1,5 @@
 package com.loptech.suitcasesmart.usecases.login
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,7 +18,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,12 +41,12 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.loptech.suitcasesmart.R
-import com.loptech.suitcasesmart.firebase.SignInState
+import com.loptech.suitcasesmart.model.domain.SignInState
 import com.loptech.suitcasesmart.ui.theme.GMAILCOLOR
 import com.loptech.suitcasesmart.usecases.common.views.EventDialog
-import com.loptech.suitcasesmart.usecases.common.views.RoundedButton
-import com.loptech.suitcasesmart.usecases.common.views.SocialMediaButton
-import com.loptech.suitcasesmart.usecases.common.views.TransparentTextField
+import com.loptech.suitcasesmart.usecases.common.controls.RoundedButton
+import com.loptech.suitcasesmart.usecases.common.controls.SocialMediaButton
+import com.loptech.suitcasesmart.usecases.common.controls.TransparentTextField
 
 @Composable
 fun LoginScreen(

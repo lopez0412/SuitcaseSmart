@@ -3,16 +3,15 @@ package com.loptech.suitcasesmart.firebase
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
-import android.util.Log
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.BeginSignInRequest.GoogleIdTokenRequestOptions
 import com.google.android.gms.auth.api.identity.SignInClient
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthCredential
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.loptech.suitcasesmart.R
+import com.loptech.suitcasesmart.model.domain.SignInresult
+import com.loptech.suitcasesmart.model.domain.UserData
 import kotlinx.coroutines.tasks.await
 import java.util.concurrent.CancellationException
 
@@ -35,7 +34,7 @@ class GoogleAuthUiClient(
         return result?.pendingIntent?.intentSender
     }
 
-    suspend fun getSignInResultWithIntent(intent: Intent) : SignInresult{
+    suspend fun getSignInResultWithIntent(intent: Intent) : SignInresult {
         var credential = oneTapClient.getSignInCredentialFromIntent(intent)
         val googleIdToken = credential.googleIdToken
         val googleCredentials = GoogleAuthProvider.getCredential(googleIdToken, null)
