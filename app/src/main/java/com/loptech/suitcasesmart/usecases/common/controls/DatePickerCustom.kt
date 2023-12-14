@@ -1,9 +1,7 @@
 package com.loptech.suitcasesmart.usecases.common.controls
 
 import android.os.Build
-import android.widget.DatePicker
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -13,19 +11,14 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import java.text.SimpleDateFormat
-import java.time.Instant
-import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import kotlin.time.Duration.Companion.days
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -34,38 +27,42 @@ fun DatePickerCustom(
     onDiss: () -> Unit,
     onSelectDate: (String) -> Unit
 ) {
+
     val calendar = Calendar.getInstance()
-    calendar.set(1990, 0, 22) // add year, month (Jan), date
+    val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.ROOT)
+
 
     // set the initial date
     val datePickerState = rememberDatePickerState(initialSelectedDateMillis = calendar.timeInMillis)
 
-
     var selectedDate by remember {
-        mutableLongStateOf(calendar.timeInMillis) // or use mutableStateOf(calendar.timeInMillis)
+        mutableLongStateOf(calendar.timeInMillis)
     }
-
-    val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.ROOT)
-
         DatePickerDialog(
             onDismissRequest = {
-                onDiss
+                onDiss.invoke()
             },
             confirmButton = {
                 TextButton(onClick = {
-                    onDiss
+                    onDiss.invoke()
                     selectedDate = datePickerState.selectedDateMillis!!
-                    val date = formatter.format(Date(selectedDate))
-                    onSelectDate(date)
+                    val c = Calendar.getInstance()
+                    var dateFixed = Date(selectedDate)
+                    c.time = dateFixed
+                    c.add(Calendar.DATE, 1)
+                    dateFixed = c.time
+                    val date = formatter.format(dateFixed)
+
+                    onSelectDate.invoke(date)
                 }) {
-                    Text(text = "Confirm")
+                    Text(text = "Confirmar")
                 }
             },
             dismissButton = {
                 TextButton(onClick = {
-                    onDiss
+                    onDiss.invoke()
                 }) {
-                    Text(text = "Cancel")
+                    Text(text = "Cancelar")
                 }
             }
         ) {

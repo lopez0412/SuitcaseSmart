@@ -1,10 +1,8 @@
 package com.loptech.suitcasesmart.usecases.home
 
 import androidx.lifecycle.ViewModel
-import com.google.firebase.firestore.FirebaseFirestore
 import com.loptech.suitcasesmart.R
 import com.loptech.suitcasesmart.firebase.FirestoreDatabase
-import com.loptech.suitcasesmart.model.domain.SignInState
 import com.loptech.suitcasesmart.model.domain.StatusDatosViajes
 import com.loptech.suitcasesmart.model.domain.Viaje
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +19,7 @@ class HomeViewModel: ViewModel(){
 
     private val firebaseDatabase = FirestoreDatabase()
     //Function to add Travel Record.
-    fun addviaje(id:String, viaje: Viaje){
+    fun addviaje(id:String, viaje: Viaje, OnSuccess: () -> Unit, OnError: () -> Unit){
         firebaseDatabase.agregarViaje(id,viaje).addOnCompleteListener {task ->
             if (task.isSuccessful){
                 _status.update {
@@ -32,6 +30,7 @@ class HomeViewModel: ViewModel(){
                         documentReference = task.result
                     )
                 }
+                OnSuccess.invoke()
             }else{
                 _status.update {
                     it.copy(
@@ -41,24 +40,24 @@ class HomeViewModel: ViewModel(){
                         reload = true
                     )
                 }
+                OnError.invoke()
             }
         }
     }//:Add travel Record
 
     //Function to get Travel Records from user Id
     fun getViajes(id:String){
-
+        _viajes.clear()
         _status.update {
             it.copy(
                 displayProgressBar = true
             )
         }
 
-
         firebaseDatabase.getViajes(id).addOnSuccessListener { viajesList ->
             for (document in viajesList){
-                val documentId = document.id
                 val viaje = document.toObject(Viaje::class.java)
+                viaje.id = document.id
                 _viajes.add(viaje)
             }
 

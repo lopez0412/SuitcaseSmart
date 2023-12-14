@@ -50,7 +50,7 @@ fun AddTravelForm(
     val viajeToAdd by remember { mutableStateOf(Viaje()) }
 
     //MARK: Body
-   Dialog(onDismissRequest = { onDissmiss }) {
+   Dialog(onDismissRequest = { onDissmiss.invoke() }) {
        Card(
            colors = CardColors(
                containerColor = Color.White,
@@ -80,11 +80,6 @@ fun AddTravelForm(
                    label = { Text("Destino") }
                )
 
-               OutlinedTextField(
-                   value = fechaPartida,
-                   onValueChange = { fechaPartida = it },
-                   label = { Text(text = "Fecha Partida")},
-                )
 
                OutlinedTextField(
                    value = notas,

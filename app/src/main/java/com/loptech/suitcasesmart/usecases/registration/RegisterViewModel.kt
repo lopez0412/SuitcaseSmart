@@ -18,14 +18,15 @@ class RegisterViewModel: ViewModel() {
     val state = _state.asStateFlow()
 
     fun register(
-        name: String,
         email: String,
         password: String,
         confirmPassword: String
     ) {
-        val errorMessage = if(name.isBlank() ||  email.isBlank() || password.isBlank() || confirmPassword.isBlank()){
+        val errorMessage = if( email.isBlank() || password.isBlank() || confirmPassword.isBlank()){
             R.string.error_input_empty
-        } else if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+        }else if (password != confirmPassword){
+            R.string.error_incorrectly_repeated_password
+        }else if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
             R.string.error_not_a_valid_email
         } else if(password != confirmPassword) {
             R.string.error_incorrectly_repeated_password
@@ -59,10 +60,6 @@ class RegisterViewModel: ViewModel() {
                     }
 
                 }
-
-            _state.update {
-                it.copy(displayProgressBar = false)
-            }
         }
     }
 

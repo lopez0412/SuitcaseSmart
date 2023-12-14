@@ -48,7 +48,7 @@ import kotlin.reflect.KFunction4
 @Composable
 fun RegistrationScreen(
     state: RegisterState,
-    onRegister: KFunction4<String, String, String, String, Unit>,
+    onRegister: (String, String,String) -> Unit,
     onBack: () -> Unit,
     onDismissDialog: () -> Unit
 ) {
@@ -147,7 +147,6 @@ fun RegistrationScreen(
                             focusManager.clearFocus()
 
                             onRegister(
-                                nameValue.value,
                                 emailValue.value,
                                 passwordValue.value,
                                 confirmPasswordValue.value
@@ -177,7 +176,6 @@ fun RegistrationScreen(
                     displayProgressBar = state.displayProgressBar,
                     onClick = {
                         onRegister(
-                            nameValue.value,
                             emailValue.value,
                             passwordValue.value,
                             confirmPasswordValue.value

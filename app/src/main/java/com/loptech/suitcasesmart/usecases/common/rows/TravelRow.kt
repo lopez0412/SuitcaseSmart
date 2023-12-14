@@ -1,18 +1,26 @@
 package com.loptech.suitcasesmart.usecases.common.rows
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Place
+import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -21,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,33 +45,23 @@ fun TravelRow(
     viaje: Viaje,
     onClick: () -> Unit
 ){
-    Card(colors = CardDefaults.cardColors(
-        containerColor = MainGrey20
-    ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(90.dp)
-            .padding(horizontal = 10.dp, vertical = 5.dp)) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
-        ) {
-            Icon(modifier = Modifier
-                .width(64.dp)
-                .height(64.dp)
-                .padding(8.dp),
+    Column(modifier = Modifier.padding(5.dp).clickable {
+        onClick.invoke()
+    }) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Image(
                 painter = painterResource(id = R.drawable.avion),
-                contentDescription = "Lugar")
-            Spacer(modifier = Modifier.width(20.dp))
+                contentDescription = "Artist image"
+            )
+            Spacer(modifier = Modifier.size(15.dp))
             Column {
-                Text(
-                    text = viaje.destino,
-                    fontSize = 24.sp
-                )
-                Text(text = "Fecha: ${viaje.fechaPartida}")
+                Text(fontFamily = FontFamily.SansSerif, text = viaje.destino)
+                Text(fontSize = 12.sp, text = "Fecha ${viaje.fechaPartida}")
             }
-
+            Spacer(Modifier.weight(1f))
+            Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, contentDescription = "Move Forward")
         }
+        HorizontalDivider()
     }
 }
 

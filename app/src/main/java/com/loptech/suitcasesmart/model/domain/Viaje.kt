@@ -1,6 +1,7 @@
 package com.loptech.suitcasesmart.model.domain
 
 data class Viaje(
+    var id: String? = null,
     var destino: String = "",
     var fechaPartida: String = "",
     var fechaRegreso: String = "",

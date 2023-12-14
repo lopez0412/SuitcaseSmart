@@ -192,7 +192,7 @@ class MainActivity : ComponentActivity() {
                                         Toast.LENGTH_LONG
                                     ).show()
 
-                                    navController.navigate("profile")
+                                    navController.navigate(AppScreens.HomeScreen.route)
                                     //viewModel.resetState()
                                 }
                             }

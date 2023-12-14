@@ -5,7 +5,7 @@
     <string name="error_input_empty">Los campos no deben estar vacios</string>
     <string name="error_not_a_valid_email">Por favor Ingresa un Email Valido</string>
     <string name="error_not_a_valid_phone_number">Por favor ingresa un Email Valido</string>
-    <string name="error_incorrectly_repeated_password">El Email no Coincide</string>
+    <string name="error_incorrectly_repeated_password">El password no Coincide</string>
     <string name="error_invalid_credentials">El Email o la contraseña no son correctas</string>
     <string name="success_registration">Usuario registrado con Exito</string>
     <string name="success_login">Inicio de sesion exitoso</string>

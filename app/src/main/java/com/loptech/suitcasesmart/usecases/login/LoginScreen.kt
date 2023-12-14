@@ -72,7 +72,9 @@ fun LoginScreen(
         Image(
             painter = painterResource(id = R.drawable.background1),
             contentDescription = "Login Image",
-            contentScale = ContentScale.Inside
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxWidth()
+                .height(250.dp)
         )
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -81,7 +83,7 @@ fun LoginScreen(
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(570.dp),
+                    .height(540.dp),
                 color = Color.White,
                 shape = RoundedCornerShape(
                     topStartPercent = 8,
