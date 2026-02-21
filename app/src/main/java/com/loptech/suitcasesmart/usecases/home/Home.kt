@@ -30,8 +30,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -64,6 +66,7 @@ fun HomeScreen(
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var showSheet by remember { mutableStateOf(false) }
 
     val maletas by viewmodel.maletas.collectAsState()
 
@@ -97,9 +100,7 @@ fun HomeScreen(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
                 shape = CircleShape,
-                onClick = {
-                    scope.launch { sheetState.show() }
-                }
+                onClick = { showSheet = true }
             ) {
                 Icon(Icons.Filled.Add, "Agregar maleta")
             }
@@ -136,10 +137,10 @@ fun HomeScreen(
                 }
             }
 
-            if (sheetState.isVisible) {
+            if (showSheet) {
                 ModalBottomSheet(
                     onDismissRequest = {
-                        scope.launch { sheetState.hide() }
+                        scope.launch { sheetState.hide() }.invokeOnCompletion { showSheet = false }
                     },
                     sheetState = sheetState,
                     containerColor = MaterialTheme.colorScheme.surface,
@@ -150,17 +151,15 @@ fun HomeScreen(
                     AddMaletaSheetForm(
                         onSave = { maletaOut ->
                             viewmodel.addMaleta(userData.userId.toString(), maletaOut, {
-                                scope.launch {
-                                    sheetState.hide()
-                                    userData.userId?.let { viewmodel.getMaletas(it) }
-                                    snackbarHostState.showSnackbar("Maleta agregada exitosamente")
-                                }
+                                scope.launch { sheetState.hide() }.invokeOnCompletion { showSheet = false }
+                                userData.userId?.let { viewmodel.getMaletas(it) }
+                                scope.launch { snackbarHostState.showSnackbar("Maleta agregada exitosamente") }
                             }, {
-                                scope.launch { sheetState.hide() }
+                                scope.launch { sheetState.hide() }.invokeOnCompletion { showSheet = false }
                             })
                         },
                         onDissmiss = {
-                            scope.launch { sheetState.hide() }
+                            scope.launch { sheetState.hide() }.invokeOnCompletion { showSheet = false }
                         }
                     )
                 }

@@ -35,12 +35,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.loptech.suitcasesmart.model.domain.StatusDatosMaletas
@@ -62,6 +65,7 @@ fun SuitcaseDetail(
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var showSheet by remember { mutableStateOf(false) }
 
     val maleta by viewmodel.maleta.collectAsState()
     val itemsList by viewmodel.items.collectAsState()
@@ -97,7 +101,7 @@ fun SuitcaseDetail(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
                 shape = CircleShape,
-                onClick = { scope.launch { sheetState.show() } }
+                onClick = { showSheet = true }
             ) {
                 Icon(Icons.Filled.Add, "Agregar item")
             }
@@ -158,9 +162,11 @@ fun SuitcaseDetail(
                 }
             }
 
-            if (sheetState.isVisible) {
+            if (showSheet) {
                 ModalBottomSheet(
-                    onDismissRequest = { scope.launch { sheetState.hide() } },
+                    onDismissRequest = {
+                        scope.launch { sheetState.hide() }.invokeOnCompletion { showSheet = false }
+                    },
                     sheetState = sheetState,
                     containerColor = MaterialTheme.colorScheme.surface,
                     contentColor = MaterialTheme.colorScheme.onSurface,
@@ -170,15 +176,15 @@ fun SuitcaseDetail(
                     AddItemSheetForm(
                         onSave = { item ->
                             viewmodel.addItem(userData.userId.toString(), maletaId, item, {
-                                scope.launch {
-                                    sheetState.hide()
-                                    snackbarHostState.showSnackbar("Item agregado")
-                                }
+                                scope.launch { sheetState.hide() }.invokeOnCompletion { showSheet = false }
+                                scope.launch { snackbarHostState.showSnackbar("Item agregado") }
                             }, {
-                                scope.launch { sheetState.hide() }
+                                scope.launch { sheetState.hide() }.invokeOnCompletion { showSheet = false }
                             })
                         },
-                        onDissmiss = { scope.launch { sheetState.hide() } }
+                        onDissmiss = {
+                            scope.launch { sheetState.hide() }.invokeOnCompletion { showSheet = false }
+                        }
                     )
                 }
             }
