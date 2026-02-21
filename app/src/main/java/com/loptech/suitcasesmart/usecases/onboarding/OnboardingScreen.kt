@@ -184,6 +184,7 @@ fun OnBoardNavButton(
     }
 }
 
+@Suppress("DEPRECATION")
 @Composable
 fun TabSelector(onboardPages: List<OnBoardingData>, currentPage: Int, onTabSelected: (Int) -> Unit) {
     TabRow(

@@ -21,7 +21,7 @@ fun SocialMediaButton(
     socialMediaColor: Color
 ) {
     OutlinedButton(
-        modifier = Modifier
+        modifier = modifier
             .width(280.dp)
             .height(50.dp),
         onClick = onClick,

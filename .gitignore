@@ -13,3 +13,11 @@
 .externalNativeBuild
 .cxx
 local.properties
+# Local keystore and private keys
+keystore/
+*.jks
+*.keystore
+*.pepk
+*.pem
+private_key*
+# End of keystore ignores

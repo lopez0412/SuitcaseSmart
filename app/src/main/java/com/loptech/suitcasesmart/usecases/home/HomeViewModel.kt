@@ -3,78 +3,64 @@ package com.loptech.suitcasesmart.usecases.home
 import androidx.lifecycle.ViewModel
 import com.loptech.suitcasesmart.R
 import com.loptech.suitcasesmart.firebase.FirestoreDatabase
-import com.loptech.suitcasesmart.model.domain.StatusDatosViajes
-import com.loptech.suitcasesmart.model.domain.Viaje
+import com.loptech.suitcasesmart.model.domain.Maleta
+import com.loptech.suitcasesmart.model.domain.MaletaOut
+import com.loptech.suitcasesmart.model.domain.StatusDatosMaletas
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class HomeViewModel: ViewModel(){
+class HomeViewModel : ViewModel() {
 
-    private val _status = MutableStateFlow(StatusDatosViajes())
+    private val _status = MutableStateFlow(StatusDatosMaletas())
     val status = _status.asStateFlow()
 
-    private val _viajes = mutableListOf<Viaje>()
-    val viajes = _viajes
+    private val _maletas = MutableStateFlow<List<Maleta>>(emptyList())
+    val maletas = _maletas.asStateFlow()
 
     private val firebaseDatabase = FirestoreDatabase()
-    //Function to add Travel Record.
-    fun addviaje(id:String, viaje: Viaje, OnSuccess: () -> Unit, OnError: () -> Unit){
-        firebaseDatabase.agregarViaje(id,viaje).addOnCompleteListener {task ->
-            if (task.isSuccessful){
+
+    fun addMaleta(userId: String, maleta: MaletaOut, onSuccess: () -> Unit, onError: () -> Unit) {
+        firebaseDatabase.addMaleta(userId, maleta).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
                 _status.update {
                     it.copy(
-                        createTravelSuccessful = true,
+                        createSuitcaseSuccessful = true,
                         displayProgressBar = false,
                         reload = true,
                         documentReference = task.result
                     )
                 }
-                OnSuccess.invoke()
-            }else{
+                onSuccess()
+            } else {
                 _status.update {
                     it.copy(
-                        createTravelSuccessful = false,
+                        createSuitcaseSuccessful = false,
                         travelError = R.string.error_al_crear_viaje,
                         displayProgressBar = false,
                         reload = true
                     )
                 }
-                OnError.invoke()
+                onError()
             }
         }
-    }//:Add travel Record
+    }
 
-    //Function to get Travel Records from user Id
-    fun getViajes(id:String){
-        _viajes.clear()
-        _status.update {
-            it.copy(
-                displayProgressBar = true
-            )
-        }
-
-        firebaseDatabase.getViajes(id).addOnSuccessListener { viajesList ->
-            for (document in viajesList){
-                val viaje = document.toObject(Viaje::class.java)
-                viaje.id = document.id
-                _viajes.add(viaje)
+    fun getMaletas(userId: String) {
+        _status.update { it.copy(displayProgressBar = true) }
+        firebaseDatabase.getMaletas(userId).addOnSuccessListener { snapshot ->
+            val list = mutableListOf<Maleta>()
+            for (document in snapshot) {
+                val maleta = document.toObject(Maleta::class.java)
+                maleta.id = document.id
+                list.add(maleta)
             }
-
-            _status.update {
-                it.copy(
-                    displayProgressBar = false
-                )
-            }
+            _maletas.value = list
+            _status.update { it.copy(displayProgressBar = false) }
         }
-
-
     }
 
     fun hideErrorDialog() {
-        _status.update {
-            it.copy(travelError = null)
-        }
+        _status.update { it.copy(travelError = null) }
     }
-
 }

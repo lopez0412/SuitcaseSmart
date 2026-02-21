@@ -1,19 +1,27 @@
 package com.loptech.suitcasesmart.model.domain
 
-data class Viaje(
-    var id: String? = null,
-    var destino: String = "",
-    var fechaPartida: String = "",
-    var fechaRegreso: String = "",
-    var notas: String = ""
-)
+import com.google.firebase.firestore.Exclude
+
 data class Maleta(
+    @get:Exclude var id: String? = null,
     val nombre: String = "",
-    val notas: String = ""
+    val tipo: String = "",
+    val color: String = "",
+    val icono: String = ""
 )
 
-data class Contenido(
+data class MaletaOut(
     val nombre: String = "",
+    val tipo: String = "",
+    val color: String = "",
+    val icono: String = ""
+)
+
+data class Item(
+    @get:Exclude var id: String? = null,
+    val nombre: String = "",
+    val categoria: String = "",
     val cantidad: Int = 0,
-    val categoria: String = ""
+    val estado: String = "por_empacar",
+    val notas: String = ""
 )

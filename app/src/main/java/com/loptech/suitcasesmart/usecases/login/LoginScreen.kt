@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
@@ -26,9 +27,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -42,6 +40,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.loptech.suitcasesmart.R
 import com.loptech.suitcasesmart.model.domain.SignInState
+import com.loptech.suitcasesmart.ui.theme.AviationNavy
 import com.loptech.suitcasesmart.ui.theme.GMAILCOLOR
 import com.loptech.suitcasesmart.usecases.common.views.EventDialog
 import com.loptech.suitcasesmart.usecases.common.controls.RoundedButton
@@ -56,8 +55,6 @@ fun LoginScreen(
     onDismissDialog: () -> Unit,
     onSignInClick: () -> Unit,
 ){
-    val context = LocalContext.current
-
     //email password login variables
     val emailValue = rememberSaveable{ mutableStateOf("") }
     val passwordValue = rememberSaveable{ mutableStateOf("") }
@@ -67,15 +64,20 @@ fun LoginScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(AviationNavy)
     ){
-        Image(
-            painter = painterResource(id = R.drawable.background1),
-            contentDescription = "Login Image",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxWidth()
-                .height(250.dp)
-        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(250.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.avion),
+                contentDescription = "Airplane",
+                modifier = Modifier.size(140.dp)
+            )
+        }
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.BottomCenter
@@ -84,7 +86,7 @@ fun LoginScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(540.dp),
-                color = Color.White,
+                color = MaterialTheme.colorScheme.surface,
                 shape = RoundedCornerShape(
                     topStartPercent = 8,
                     topEndPercent = 8
@@ -222,4 +224,3 @@ Button(onClick = onSignInClick) {
             Text(text = "Sign in")
         }
  */
-

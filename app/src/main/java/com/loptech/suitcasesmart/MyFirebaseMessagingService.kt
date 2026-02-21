@@ -10,12 +10,9 @@ import com.google.firebase.messaging.RemoteMessage
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onMessageReceived(message: RemoteMessage) {
-        Looper.prepare()
-
-        Handler().post{
+        // Post to the main thread using the main looper's handler
+        Handler(Looper.getMainLooper()).post {
             Toast.makeText(baseContext, "Mensaje Recibido: $message", Toast.LENGTH_LONG).show()
         }
-
-        Looper.loop()
     }
 }
