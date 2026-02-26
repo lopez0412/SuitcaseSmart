@@ -1,5 +1,6 @@
 package com.loptech.suitcasesmart.usecases.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,9 +9,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -21,10 +25,14 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,11 +44,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
+import com.loptech.suitcasesmart.model.domain.Maleta
 import com.loptech.suitcasesmart.model.domain.StatusDatosMaletas
 import com.loptech.suitcasesmart.model.domain.UserData
-
 import com.loptech.suitcasesmart.usecases.common.rows.MaletaRow
 import com.loptech.suitcasesmart.usecases.common.views.AddMaletaSheetForm
 import com.loptech.suitcasesmart.usecases.common.views.EventDialog
@@ -67,8 +76,12 @@ fun HomeScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var showSheet by remember { mutableStateOf(false) }
+    var maletaToEdit by remember { mutableStateOf<Maleta?>(null) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var maletaToDelete by remember { mutableStateOf<Maleta?>(null) }
 
     val maletas by viewmodel.maletas.collectAsState()
+    val progreso by viewmodel.progreso.collectAsState()
 
     LaunchedEffect(key1 = Unit) {
         viewmodel.getMaletas(userData.userId.toString())
@@ -100,7 +113,10 @@ fun HomeScreen(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
                 shape = CircleShape,
-                onClick = { showSheet = true }
+                onClick = {
+                    maletaToEdit = null
+                    showSheet = true
+                }
             ) {
                 Icon(Icons.Filled.Add, "Agregar maleta")
             }
@@ -130,17 +146,58 @@ fun HomeScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 contentPadding = PaddingValues(vertical = 8.dp)
             ) {
-                items(maletas) { maleta ->
-                    MaletaRow(maleta = maleta, onClick = {
-                        maleta.id?.let { navigateToDetail(it) }
-                    })
+                items(maletas, key = { it.id ?: it.nombre }) { maleta ->
+                    val dismissState = rememberSwipeToDismissBoxState(
+                        confirmValueChange = { value ->
+                            if (value == SwipeToDismissBoxValue.EndToStart) {
+                                maletaToDelete = maleta
+                                showDeleteDialog = true
+                            }
+                            false
+                        }
+                    )
+                    SwipeToDismissBox(
+                        state = dismissState,
+                        enableDismissFromStartToEnd = false,
+                        backgroundContent = {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(16.dp)
+                                    .background(Color(0xFFE74C3C), RoundedCornerShape(12.dp))
+                                    .padding(end = 20.dp),
+                                contentAlignment = Alignment.CenterEnd
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Delete,
+                                    contentDescription = "Eliminar",
+                                    tint = Color.White
+                                )
+                            }
+                        }
+                    ) {
+                        val (emp, tot) = progreso[maleta.id] ?: Pair(0, 0)
+                        MaletaRow(
+                            maleta = maleta,
+                            empacados = emp,
+                            total = tot,
+                            onClick = { maleta.id?.let { navigateToDetail(it) } },
+                            onLongClick = {
+                                maletaToEdit = maleta
+                                showSheet = true
+                            }
+                        )
+                    }
                 }
             }
 
             if (showSheet) {
                 ModalBottomSheet(
                     onDismissRequest = {
-                        scope.launch { sheetState.hide() }.invokeOnCompletion { showSheet = false }
+                        scope.launch { sheetState.hide() }.invokeOnCompletion {
+                            showSheet = false
+                            maletaToEdit = null
+                        }
                     },
                     sheetState = sheetState,
                     containerColor = MaterialTheme.colorScheme.surface,
@@ -148,18 +205,32 @@ fun HomeScreen(
                     shape = MaterialTheme.shapes.large,
                     tonalElevation = 8.dp
                 ) {
+                    val editingMaleta = maletaToEdit
                     AddMaletaSheetForm(
+                        initialMaleta = editingMaleta,
                         onSave = { maletaOut ->
-                            viewmodel.addMaleta(userData.userId.toString(), maletaOut, {
-                                scope.launch { sheetState.hide() }.invokeOnCompletion { showSheet = false }
-                                userData.userId?.let { viewmodel.getMaletas(it) }
-                                scope.launch { snackbarHostState.showSnackbar("Maleta agregada exitosamente") }
-                            }, {
-                                scope.launch { sheetState.hide() }.invokeOnCompletion { showSheet = false }
-                            })
+                            if (editingMaleta?.id != null) {
+                                viewmodel.updateMaleta(userData.userId.toString(), editingMaleta.id!!, maletaOut, {
+                                    scope.launch { sheetState.hide() }.invokeOnCompletion { showSheet = false; maletaToEdit = null }
+                                    scope.launch { snackbarHostState.showSnackbar("Maleta actualizada") }
+                                }, {
+                                    scope.launch { sheetState.hide() }.invokeOnCompletion { showSheet = false; maletaToEdit = null }
+                                })
+                            } else {
+                                viewmodel.addMaleta(userData.userId.toString(), maletaOut, {
+                                    scope.launch { sheetState.hide() }.invokeOnCompletion { showSheet = false }
+                                    userData.userId?.let { viewmodel.getMaletas(it) }
+                                    scope.launch { snackbarHostState.showSnackbar("Maleta agregada exitosamente") }
+                                }, {
+                                    scope.launch { sheetState.hide() }.invokeOnCompletion { showSheet = false }
+                                })
+                            }
                         },
                         onDissmiss = {
-                            scope.launch { sheetState.hide() }.invokeOnCompletion { showSheet = false }
+                            scope.launch { sheetState.hide() }.invokeOnCompletion {
+                                showSheet = false
+                                maletaToEdit = null
+                            }
                         }
                     )
                 }
@@ -170,6 +241,36 @@ fun HomeScreen(
             EventDialog(
                 errorMessage = state.travelError,
                 onDismiss = { viewmodel.hideErrorDialog() }
+            )
+        }
+
+        if (showDeleteDialog && maletaToDelete != null) {
+            AlertDialog(
+                onDismissRequest = {
+                    showDeleteDialog = false
+                    maletaToDelete = null
+                },
+                title = { Text("Eliminar maleta") },
+                text = { Text("¿Eliminar \"${maletaToDelete?.nombre}\"? Esta acción no se puede deshacer.") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        maletaToDelete?.id?.let { id ->
+                            viewmodel.deleteMaleta(userData.userId.toString(), id)
+                        }
+                        showDeleteDialog = false
+                        maletaToDelete = null
+                    }) {
+                        Text("Eliminar", color = Color(0xFFE74C3C))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = {
+                        showDeleteDialog = false
+                        maletaToDelete = null
+                    }) {
+                        Text("Cancelar")
+                    }
+                }
             )
         }
     }

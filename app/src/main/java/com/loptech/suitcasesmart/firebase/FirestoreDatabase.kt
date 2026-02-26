@@ -41,4 +41,43 @@ class FirestoreDatabase {
             .collection("items").document(itemId)
             .update("estado", estado)
     }
+
+    fun deleteMaleta(userId: String, maletaId: String): Task<Void> {
+        return db.collection("users").document(userId)
+            .collection("maletas").document(maletaId)
+            .delete()
+    }
+
+    fun updateMaleta(userId: String, maletaId: String, maleta: MaletaOut): Task<Void> {
+        return db.collection("users").document(userId)
+            .collection("maletas").document(maletaId)
+            .update(
+                mapOf(
+                    "nombre" to maleta.nombre,
+                    "tipo" to maleta.tipo,
+                    "color" to maleta.color,
+                    "icono" to maleta.icono
+                )
+            )
+    }
+
+    fun updateItem(userId: String, maletaId: String, itemId: String, item: Item): Task<Void> {
+        return db.collection("users").document(userId)
+            .collection("maletas").document(maletaId)
+            .collection("items").document(itemId)
+            .update(
+                mapOf(
+                    "nombre" to item.nombre,
+                    "categoria" to item.categoria,
+                    "cantidad" to item.cantidad
+                )
+            )
+    }
+
+    fun deleteItem(userId: String, maletaId: String, itemId: String): Task<Void> {
+        return db.collection("users").document(userId)
+            .collection("maletas").document(maletaId)
+            .collection("items").document(itemId)
+            .delete()
+    }
 }

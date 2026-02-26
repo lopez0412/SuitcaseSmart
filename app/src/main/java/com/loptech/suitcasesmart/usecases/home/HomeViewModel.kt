@@ -18,6 +18,9 @@ class HomeViewModel : ViewModel() {
     private val _maletas = MutableStateFlow<List<Maleta>>(emptyList())
     val maletas = _maletas.asStateFlow()
 
+    private val _progreso = MutableStateFlow<Map<String, Pair<Int, Int>>>(emptyMap())
+    val progreso = _progreso.asStateFlow()
+
     private val firebaseDatabase = FirestoreDatabase()
 
     fun addMaleta(userId: String, maleta: MaletaOut, onSuccess: () -> Unit, onError: () -> Unit) {
@@ -57,7 +60,53 @@ class HomeViewModel : ViewModel() {
             }
             _maletas.value = list
             _status.update { it.copy(displayProgressBar = false) }
+            loadItemCounts(userId, list)
         }
+    }
+
+    private fun loadItemCounts(userId: String, maletas: List<Maleta>) {
+        val validMaletas = maletas.filter { it.id != null }
+        if (validMaletas.isEmpty()) return
+
+        val newCounts = mutableMapOf<String, Pair<Int, Int>>()
+        var completed = 0
+
+        for (maleta in validMaletas) {
+            val id = maleta.id!!
+            firebaseDatabase.getItems(userId, id).addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val snapshot = task.result
+                    val total = snapshot.size()
+                    val empacados = snapshot.documents.count { doc ->
+                        val estado = doc.getString("estado")
+                        estado == "empacado" || estado == "usado"
+                    }
+                    newCounts[id] = Pair(empacados, total)
+                }
+                completed++
+                if (completed == validMaletas.size) {
+                    _progreso.value = newCounts.toMap()
+                }
+            }
+        }
+    }
+
+    fun updateMaleta(userId: String, maletaId: String, maleta: MaletaOut, onSuccess: () -> Unit, onError: () -> Unit) {
+        _maletas.update { list ->
+            list.map { m ->
+                if (m.id == maletaId) m.copy(nombre = maleta.nombre, tipo = maleta.tipo, color = maleta.color, icono = maleta.icono)
+                else m
+            }
+        }
+        firebaseDatabase.updateMaleta(userId, maletaId, maleta).addOnCompleteListener { task ->
+            if (task.isSuccessful) onSuccess() else onError()
+        }
+    }
+
+    fun deleteMaleta(userId: String, maletaId: String) {
+        _maletas.update { it.filter { maleta -> maleta.id != maletaId } }
+        _progreso.update { it - maletaId }
+        firebaseDatabase.deleteMaleta(userId, maletaId)
     }
 
     fun hideErrorDialog() {

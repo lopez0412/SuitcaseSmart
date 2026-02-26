@@ -5,6 +5,7 @@ import com.loptech.suitcasesmart.firebase.FirestoreDatabase
 import com.loptech.suitcasesmart.model.domain.Item
 import com.loptech.suitcasesmart.model.domain.Maleta
 import com.loptech.suitcasesmart.model.domain.StatusDatosMaletas
+import com.loptech.suitcasesmart.usecases.common.nextEstado
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -56,6 +57,30 @@ class TravelDetailViewModel : ViewModel() {
             } else {
                 onError()
             }
+        }
+    }
+
+    fun updateEstado(userId: String, maletaId: String, item: Item) {
+        val nuevoEstado = nextEstado(item.estado)
+        _items.update { list ->
+            list.map { if (it.id == item.id) it.copy(estado = nuevoEstado) else it }
+        }
+        item.id?.let { itemId ->
+            firebaseDatabase.updateItemEstado(userId, maletaId, itemId, nuevoEstado)
+        }
+    }
+
+    fun updateItem(userId: String, maletaId: String, item: Item) {
+        _items.update { list -> list.map { if (it.id == item.id) item else it } }
+        item.id?.let { itemId ->
+            firebaseDatabase.updateItem(userId, maletaId, itemId, item)
+        }
+    }
+
+    fun deleteItem(userId: String, maletaId: String, item: Item) {
+        _items.update { list -> list.filter { it.id != item.id } }
+        item.id?.let { itemId ->
+            firebaseDatabase.deleteItem(userId, maletaId, itemId)
         }
     }
 }

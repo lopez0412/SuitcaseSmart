@@ -41,6 +41,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.loptech.suitcasesmart.model.domain.Maleta
 import com.loptech.suitcasesmart.model.domain.MaletaOut
 import com.loptech.suitcasesmart.usecases.common.MALETA_COLOR_OPTIONS
 import com.loptech.suitcasesmart.usecases.common.hexToColor
@@ -50,13 +51,15 @@ import com.loptech.suitcasesmart.usecases.common.maletaVisualForTipo
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddMaletaSheetForm(
+    initialMaleta: Maleta? = null,
     onSave: (MaletaOut) -> Unit,
     onDissmiss: () -> Unit
 ) {
-    var nombre by remember { mutableStateOf("") }
-    var tipo by remember { mutableStateOf("") }
+    val isEditing = initialMaleta != null
+    var nombre by remember { mutableStateOf(initialMaleta?.nombre ?: "") }
+    var tipo by remember { mutableStateOf(initialMaleta?.tipo ?: "") }
     var expanded by remember { mutableStateOf(false) }
-    var selectedColorHex by remember { mutableStateOf("") }
+    var selectedColorHex by remember { mutableStateOf(initialMaleta?.color ?: "") }
     val tipos = listOf("carry-on", "grande", "mochila", "personal")
 
     Column(
@@ -68,7 +71,7 @@ fun AddMaletaSheetForm(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Agregar nueva Maleta",
+            text = if (isEditing) "Editar Maleta" else "Agregar nueva Maleta",
             modifier = Modifier.wrapContentSize(Alignment.Center),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.titleMedium

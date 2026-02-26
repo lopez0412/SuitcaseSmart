@@ -31,12 +31,14 @@ import com.loptech.suitcasesmart.model.domain.Item
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddItemSheetForm(
+    initialItem: Item? = null,
     onSave: (Item) -> Unit,
     onDissmiss: () -> Unit
 ) {
-    var nombre by remember { mutableStateOf("") }
-    var cantidad by remember { mutableStateOf("1") }
-    var categoria by remember { mutableStateOf("") }
+    val isEditing = initialItem != null
+    var nombre by remember { mutableStateOf(initialItem?.nombre ?: "") }
+    var cantidad by remember { mutableStateOf(initialItem?.cantidad?.toString() ?: "1") }
+    var categoria by remember { mutableStateOf(initialItem?.categoria ?: "") }
     var categoriaExpanded by remember { mutableStateOf(false) }
     val categorias = listOf("ropa", "electronica", "documentos", "higiene", "medicamentos", "otros")
 
@@ -48,7 +50,7 @@ fun AddItemSheetForm(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Agregar Item",
+            text = if (isEditing) "Editar Item" else "Agregar Item",
             modifier = Modifier.wrapContentSize(Alignment.Center),
             textAlign = TextAlign.Center,
             color = Color.Black
