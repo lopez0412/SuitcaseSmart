@@ -16,6 +16,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -31,6 +33,7 @@ import com.google.firebase.remoteconfig.remoteConfigSettings
 import com.loptech.suitcasesmart.firebase.GoogleAuthUiClient
 import com.loptech.suitcasesmart.usecases.login.SignInviewModel
 import com.loptech.suitcasesmart.navigation.AppScreens
+import com.loptech.suitcasesmart.provider.preferences.PreferencesManager
 import com.loptech.suitcasesmart.ui.theme.SuitcaseSmartTheme
 import com.loptech.suitcasesmart.usecases.TravelDetail.SuitcaseDetail
 import com.loptech.suitcasesmart.usecases.TravelDetail.TravelDetailViewModel
@@ -72,7 +75,13 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = AppScreens.SplashScreen.route) {
+                    val preferencesManager = remember {
+                        PreferencesManager(this)
+                    }
+                    val data = remember { mutableStateOf(preferencesManager.getData("isOnboarding", false)) }
+                    val startDestination = if (data.value) AppScreens.LoginScreen.route else AppScreens.OnboardingScreen.route
+
+                    NavHost(navController = navController, startDestination = startDestination) {
 
                         //MARK: LoginScreen
                         composable(AppScreens.LoginScreen.route) {
@@ -139,11 +148,6 @@ class MainActivity : ComponentActivity() {
                                         }
                                     })
                             }
-                        }
-
-                        //MARK: Splash Screen
-                        composable(AppScreens.SplashScreen.route) {
-                            SplashScreen(navController)
                         }
 
                         //MARK: Onboarding Screen

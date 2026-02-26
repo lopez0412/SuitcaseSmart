@@ -34,7 +34,6 @@ fun SplashScreen(navController: NavHostController) {
     }
     val data = remember { mutableStateOf(preferencesManager.getData("isOnboarding", false)) }
 
-
     LaunchedEffect(key1 = true) {
         delay(3000)
         navController.popBackStack()

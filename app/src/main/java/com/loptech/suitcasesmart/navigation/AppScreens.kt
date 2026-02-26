@@ -5,7 +5,6 @@ import androidx.navigation.navArgument
 import com.loptech.suitcasesmart.usecases.home.ProviderType
 
 sealed class AppScreens(val route: String, val arguments: List<NamedNavArgument> = emptyList()) {
-    object SplashScreen : AppScreens("splash_screen")
     object OnboardingScreen : AppScreens("onboarding_screen")
     object LoginScreen : AppScreens("login_screen")
     object RegisterScreen : AppScreens("register_screen")
