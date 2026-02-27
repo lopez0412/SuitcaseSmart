@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew assembleDebug:*)",
+      "Bash(./gradlew :app:compileDebugKotlin:*)",
+      "Bash(bash -c './gradlew assembleDebug --no-daemon')",
+      "Bash(git stash:*)",
+      "Bash(echo:*)",
+      "Bash(git stash pop:*)",
+      "Bash(./gradlew:*)",
+      "Bash(powershell.exe -Command \"systeminfo\")",
+      "Bash(powershell.exe -Command \"systeminfo | Out-String\")",
+      "Bash(powershell.exe -Command \"Get-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V | Select-Object FeatureName, State\")",
+      "Bash(git mv:*)"
+    ]
+  }
+}

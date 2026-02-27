@@ -19,3 +19,19 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Firebase Firestore
+-keep class com.google.firebase.** { *; }
+-keep class com.google.android.gms.** { *; }
+-dontwarn com.google.firebase.**
+-dontwarn com.google.android.gms.**
+
+# Kotlin Serialization / data classes usadas por Firestore
+-keepclassmembers class com.loptech.suitcasesmart.model.** { *; }
+
+# Crashlytics — preservar stack traces legibles
+-keepattributes SourceFile,LineNumberTable
+-keep public class * extends java.lang.Exception
+
+# Coil
+-dontwarn coil.**
