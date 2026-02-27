@@ -1,6 +1,7 @@
 package com.loptech.suitcasesmart.usecases.home
 
 import androidx.lifecycle.ViewModel
+import com.google.firebase.firestore.ListenerRegistration
 import com.loptech.suitcasesmart.R
 import com.loptech.suitcasesmart.firebase.FirestoreDatabase
 import com.loptech.suitcasesmart.model.domain.Maleta
@@ -22,6 +23,12 @@ class HomeViewModel : ViewModel() {
     val progreso = _progreso.asStateFlow()
 
     private val firebaseDatabase = FirestoreDatabase()
+    private var maletasListener: ListenerRegistration? = null
+
+    override fun onCleared() {
+        super.onCleared()
+        maletasListener?.remove()
+    }
 
     fun addMaleta(userId: String, maleta: MaletaOut, onSuccess: () -> Unit, onError: () -> Unit) {
         firebaseDatabase.addMaleta(userId, maleta).addOnCompleteListener { task ->
@@ -51,13 +58,8 @@ class HomeViewModel : ViewModel() {
 
     fun getMaletas(userId: String) {
         _status.update { it.copy(displayProgressBar = true) }
-        firebaseDatabase.getMaletas(userId).addOnSuccessListener { snapshot ->
-            val list = mutableListOf<Maleta>()
-            for (document in snapshot) {
-                val maleta = document.toObject(Maleta::class.java)
-                maleta.id = document.id
-                list.add(maleta)
-            }
+        maletasListener?.remove()
+        maletasListener = firebaseDatabase.listenMaletas(userId) { list ->
             _maletas.value = list
             _status.update { it.copy(displayProgressBar = false) }
             loadItemCounts(userId, list)

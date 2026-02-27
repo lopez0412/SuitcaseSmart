@@ -11,11 +11,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -62,18 +66,19 @@ enum class ProviderType {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Suppress("UNUSED_PARAMETER")
 @Composable
 fun HomeScreen(
     userData: UserData,
     state: StatusDatosMaletas,
     viewmodel: HomeViewModel,
     navigateToDetail: (String) -> Unit,
-    _onsignOut: () -> Unit
+    navigateToProfile: () -> Unit,
+    onSignOut: () -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+    var menuExpanded by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var showSheet by remember { mutableStateOf(false) }
     var maletaToEdit by remember { mutableStateOf<Maleta?>(null) }
@@ -97,11 +102,32 @@ fun HomeScreen(
                     titleContentColor = MaterialTheme.colorScheme.onPrimary
                 ),
                 actions = {
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = { menuExpanded = true }) {
                         Icon(
                             imageVector = Icons.Filled.Menu,
                             contentDescription = "Menu",
                             tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = menuExpanded,
+                        onDismissRequest = { menuExpanded = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Mi perfil") },
+                            leadingIcon = { Icon(Icons.Filled.AccountCircle, contentDescription = null) },
+                            onClick = {
+                                menuExpanded = false
+                                navigateToProfile()
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Cerrar sesión") },
+                            leadingIcon = { Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = null) },
+                            onClick = {
+                                menuExpanded = false
+                                onSignOut()
+                            }
                         )
                     }
                 },
@@ -219,7 +245,6 @@ fun HomeScreen(
                             } else {
                                 viewmodel.addMaleta(userData.userId.toString(), maletaOut, {
                                     scope.launch { sheetState.hide() }.invokeOnCompletion { showSheet = false }
-                                    userData.userId?.let { viewmodel.getMaletas(it) }
                                     scope.launch { snackbarHostState.showSnackbar("Maleta agregada exitosamente") }
                                 }, {
                                     scope.launch { sheetState.hide() }.invokeOnCompletion { showSheet = false }

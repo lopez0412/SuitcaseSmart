@@ -3,6 +3,7 @@ package com.loptech.suitcasesmart.firebase
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.QuerySnapshot
 import com.loptech.suitcasesmart.model.domain.Item
 import com.loptech.suitcasesmart.model.domain.Maleta
@@ -13,6 +14,30 @@ class FirestoreDatabase {
 
     fun getMaletas(userId: String): Task<QuerySnapshot> {
         return db.collection("users").document(userId).collection("maletas").get()
+    }
+
+    fun listenMaletas(userId: String, onUpdate: (List<Maleta>) -> Unit): ListenerRegistration {
+        return db.collection("users").document(userId).collection("maletas")
+            .addSnapshotListener { snapshot, _ ->
+                if (snapshot == null) return@addSnapshotListener
+                val list = snapshot.documents.mapNotNull { doc ->
+                    doc.toObject(Maleta::class.java)?.also { it.id = doc.id }
+                }
+                onUpdate(list)
+            }
+    }
+
+    fun listenItems(userId: String, maletaId: String, onUpdate: (List<Item>) -> Unit): ListenerRegistration {
+        return db.collection("users").document(userId)
+            .collection("maletas").document(maletaId)
+            .collection("items")
+            .addSnapshotListener { snapshot, _ ->
+                if (snapshot == null) return@addSnapshotListener
+                val list = snapshot.documents.mapNotNull { doc ->
+                    doc.toObject(Item::class.java)?.also { it.id = doc.id }
+                }
+                onUpdate(list)
+            }
     }
 
     fun addMaleta(userId: String, maleta: MaletaOut): Task<DocumentReference> {

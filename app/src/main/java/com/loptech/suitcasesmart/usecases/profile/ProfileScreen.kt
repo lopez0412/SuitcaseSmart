@@ -44,7 +44,7 @@ fun ProfileScreen(
     ) {
         if (userData.profilePictureUrl != null){
             AsyncImage(
-                model = userData.username,
+                model = userData.profilePictureUrl,
                 contentDescription = null,
                 modifier = Modifier
                     .size(150.dp)

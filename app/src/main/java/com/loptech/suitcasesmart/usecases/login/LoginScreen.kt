@@ -73,9 +73,9 @@ fun LoginScreen(
             contentAlignment = Alignment.Center
         ) {
             Image(
-                painter = painterResource(id = R.drawable.avion),
-                contentDescription = "Airplane",
-                modifier = Modifier.size(140.dp)
+                painter = painterResource(id = R.drawable.play_store_icon),
+                contentDescription = "SuitcaseSmart",
+                modifier = Modifier.size(180.dp)
             )
         }
         Box(

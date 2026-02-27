@@ -187,14 +187,20 @@ class MainActivity : ComponentActivity() {
                                     viewmodel = viewModel,
                                     navigateToDetail = {
                                         navController.navigate(AppScreens.SuitcaseDetailScreen.route + "/" + it)
+                                    },
+                                    navigateToProfile = {
+                                        navController.navigate(AppScreens.ProfileScreen.route)
+                                    },
+                                    onSignOut = {
+                                        lifecycleScope.launch {
+                                            googleAuthUiClient.signOut()
+                                            Toast.makeText(applicationContext, "Signed Out", Toast.LENGTH_LONG).show()
+                                            navController.navigate(AppScreens.LoginScreen.route) {
+                                                popUpTo(0) { inclusive = true }
+                                            }
+                                        }
                                     }
-                                ) {
-                                    lifecycleScope.launch {
-                                        googleAuthUiClient.signOut()
-                                        Toast.makeText(applicationContext, "Signed Out", Toast.LENGTH_LONG).show()
-                                        navController.popBackStack()
-                                    }
-                                }
+                                )
                             }
                         }
 

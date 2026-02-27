@@ -79,9 +79,9 @@ fun RegistrationScreen(
             contentAlignment = Alignment.Center
         ) {
             Image(
-                painter = painterResource(id = R.drawable.avion),
-                contentDescription = "Airplane",
-                modifier = Modifier.size(120.dp)
+                painter = painterResource(id = R.drawable.play_store_icon),
+                contentDescription = "SuitcaseSmart",
+                modifier = Modifier.size(160.dp)
             )
         }
 

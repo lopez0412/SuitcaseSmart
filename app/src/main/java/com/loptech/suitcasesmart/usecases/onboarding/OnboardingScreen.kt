@@ -37,7 +37,7 @@ import androidx.navigation.NavHostController
 import com.loptech.suitcasesmart.R
 import com.loptech.suitcasesmart.navigation.AppScreens
 import com.loptech.suitcasesmart.provider.preferences.PreferencesManager
-import loptech.jadebeautystudio.model.domain.OnBoardingData
+import com.loptech.suitcasesmart.model.domain.OnBoardingData
 
 @Composable
 fun OnboardScreen(navController: NavHostController) {
