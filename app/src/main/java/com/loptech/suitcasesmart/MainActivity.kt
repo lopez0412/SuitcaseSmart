@@ -5,10 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
-import androidx.activity.result.IntentSenderRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -24,7 +21,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
@@ -51,10 +47,7 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
     private val TAG: String = "MainActivity"
     private val googleAuthUiClient by lazy {
-        GoogleAuthUiClient(
-            context = applicationContext,
-            oneTapClient = Identity.getSignInClient(applicationContext)
-        )
+        GoogleAuthUiClient(context = applicationContext)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -94,20 +87,6 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
 
-                            val launcher = rememberLauncherForActivityResult(
-                                contract = ActivityResultContracts.StartIntentSenderForResult(),
-                                onResult = { result ->
-                                    if (result.resultCode == RESULT_OK) {
-                                        lifecycleScope.launch {
-                                            val signInResult = googleAuthUiClient.getSignInResultWithIntent(
-                                                intent = result.data ?: return@launch
-                                            )
-                                            viewModel.onSignInresult(signInResult)
-                                        }
-                                    }
-                                }
-                            )
-
                             LaunchedEffect(key1 = state.isSignInSuccessful) {
                                 if (state.isSignInSuccessful) {
                                     Toast.makeText(applicationContext, "Sign in successful", Toast.LENGTH_LONG).show()
@@ -125,14 +104,8 @@ class MainActivity : ComponentActivity() {
                                 onDismissDialog = viewModel::hideErrorDialog,
                                 onSignInClick = {
                                     lifecycleScope.launch {
-                                        val signInIntentSender = googleAuthUiClient.signIn()
-                                        if (signInIntentSender == null) {
-                                            Toast.makeText(applicationContext, "No se pudo iniciar Google Sign-In. Intenta de nuevo.", Toast.LENGTH_LONG).show()
-                                            return@launch
-                                        }
-                                        launcher.launch(
-                                            IntentSenderRequest.Builder(signInIntentSender).build()
-                                        )
+                                        val result = googleAuthUiClient.signIn(this@MainActivity)
+                                        viewModel.onSignInresult(result)
                                     }
                                 })
                         }

@@ -24,9 +24,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -111,21 +109,6 @@ fun OnBoardImageView(modifier: Modifier = Modifier, imageRes: Int) {
             contentDescription = null,
             modifier = Modifier.width(300.dp).height(300.dp).align(Alignment.Center).fillMaxWidth(),
             contentScale = ContentScale.FillWidth
-        )
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .align(Alignment.BottomCenter)
-            .graphicsLayer {
-                // Apply alpha to create the fading effect
-                alpha = 0.6f
-            }
-            .background(
-                Brush.verticalGradient(
-                    colorStops = arrayOf(
-                        Pair(0.8f, Color.Transparent), Pair(1f, Color.White)
-                    )
-                )
-            )
         )
     }
 }

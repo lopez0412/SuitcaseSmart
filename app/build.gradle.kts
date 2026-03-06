@@ -32,8 +32,8 @@ android {
         applicationId = "com.loptech.suitcasesmart"
         minSdk = 24
         targetSdk = 35
-        versionCode = 4
-        versionName = "1.0.2"
+        versionCode = 5
+        versionName = "1.0.3  "
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -105,6 +105,9 @@ dependencies {
    // kapt("com.google.dagger:hilt-android-compiler:2.44")
 
     implementation("com.google.android.gms:play-services-auth:20.7.0")
+    implementation("androidx.credentials:credentials:1.3.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
     implementation("com.google.firebase:firebase-messaging-ktx")
     implementation("com.google.firebase:firebase-config")
     testImplementation("junit:junit:4.13.2")
