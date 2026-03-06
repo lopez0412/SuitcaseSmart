@@ -126,10 +126,12 @@ class MainActivity : ComponentActivity() {
                                 onSignInClick = {
                                     lifecycleScope.launch {
                                         val signInIntentSender = googleAuthUiClient.signIn()
+                                        if (signInIntentSender == null) {
+                                            Toast.makeText(applicationContext, "No se pudo iniciar Google Sign-In. Intenta de nuevo.", Toast.LENGTH_LONG).show()
+                                            return@launch
+                                        }
                                         launcher.launch(
-                                            IntentSenderRequest.Builder(
-                                                signInIntentSender ?: return@launch
-                                            ).build()
+                                            IntentSenderRequest.Builder(signInIntentSender).build()
                                         )
                                     }
                                 })

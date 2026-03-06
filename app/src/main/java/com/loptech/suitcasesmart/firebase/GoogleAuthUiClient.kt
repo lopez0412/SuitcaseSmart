@@ -92,7 +92,7 @@ class GoogleAuthUiClient(
                     .setServerClientId(context.getString(R.string.default_web_client_id))
                     .build()
             )
-            .setAutoSelectEnabled(true)
+            .setAutoSelectEnabled(false)
             .build()
     }
 }

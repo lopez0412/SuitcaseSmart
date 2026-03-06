@@ -116,7 +116,7 @@ fun LoginScreen(
                         TransparentTextField(
                             textFieldValue = emailValue,
                             textLabel = "Email",
-                            keyboardType = KeyboardType.Phone,
+                            keyboardType = KeyboardType.Email,
                             keyboardActions = KeyboardActions(
                                 onNext = {
                                     focusManager.moveFocus(FocusDirection.Down)
