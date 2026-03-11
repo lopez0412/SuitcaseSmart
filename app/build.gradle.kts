@@ -32,8 +32,8 @@ android {
         applicationId = "com.loptech.suitcasesmart"
         minSdk = 24
         targetSdk = 35
-        versionCode = 5
-        versionName = "1.0.3  "
+        versionCode = 6
+        versionName = "1.0.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -86,7 +86,7 @@ dependencies {
     implementation("com.google.firebase:firebase-auth-ktx")
 
     // Import the BoM for the Firebase platform
-    implementation(platform("com.google.firebase:firebase-bom:32.4.0"))
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
 
     // Add the dependencies for the Crashlytics and Analytics libraries
     // When using the BoM, you don't specify versions in Firebase library dependencies
@@ -104,7 +104,7 @@ dependencies {
     //implementation("com.google.dagger:hilt-android:2.44")
    // kapt("com.google.dagger:hilt-android-compiler:2.44")
 
-    implementation("com.google.android.gms:play-services-auth:20.7.0")
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
     implementation("androidx.credentials:credentials:1.3.0")
     implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")

@@ -2,7 +2,7 @@
   "project_info": {
     "project_number": "628666607440",
     "project_id": "suitcasesmart",
-    "storage_bucket": "suitcasesmart.appspot.com"
+    "storage_bucket": "suitcasesmart.firebasestorage.app"
   },
   "client": [
     {
@@ -14,11 +14,19 @@
       },
       "oauth_client": [
         {
-          "client_id": "628666607440-8rtjv3rle6sm3k11jq8cmh451v70nt6m.apps.googleusercontent.com",
+          "client_id": "628666607440-mm45viqvn1l27g7gefftcm1211bfesv4.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.loptech.suitcasesmart",
-            "certificate_hash": "dd666fea2eb43674c26b1ae22d983f940b627b98"
+            "certificate_hash": "10598e9d65a2b0ceb70d3bd68c25650c9d00a961"
+          }
+        },
+        {
+          "client_id": "628666607440-pv42bkou12262e8mo9rvrl7q3tq0k15o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.loptech.suitcasesmart",
+            "certificate_hash": "32c51c46ff6fd9b15bc72fe9c0ff63af92d6f511"
           }
         },
         {
@@ -37,6 +45,13 @@
             {
               "client_id": "628666607440-8ibomeeb4v85t1jrn0hml3gsjk168h9l.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "628666607440-28l3e7jtn3gvt2b34ise5jrt4cb80a9g.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.loptech.SuitcaseSmart"
+              }
             }
           ]
         }
