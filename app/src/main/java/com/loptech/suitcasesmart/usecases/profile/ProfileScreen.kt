@@ -18,6 +18,7 @@ import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -53,6 +54,7 @@ fun ProfileScreen(
     onsignOut: () -> Unit
 ) {
     var showErrorButton by remember { mutableStateOf(false) }
+    var isSigningOut by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         Firebase.remoteConfig.fetchAndActivate().addOnCompleteListener { task ->
@@ -139,20 +141,34 @@ fun ProfileScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             OutlinedButton(
-                onClick = onsignOut,
+                onClick = {
+                    if (!isSigningOut) {
+                        isSigningOut = true
+                        onsignOut()
+                    }
+                },
+                enabled = !isSigningOut,
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.outlinedButtonColors(
                     contentColor = MaterialTheme.colorScheme.error
                 ),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.error)
             ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.Logout,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp)
-                )
+                if (isSigningOut) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(18.dp),
+                        strokeWidth = 2.dp,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.Logout,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Cerrar sesión")
+                Text(if (isSigningOut) "Cerrando sesión..." else "Cerrar sesión")
             }
 
             if (showErrorButton) {
