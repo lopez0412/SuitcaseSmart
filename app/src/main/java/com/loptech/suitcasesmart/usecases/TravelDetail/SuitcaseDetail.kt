@@ -124,7 +124,7 @@ fun SuitcaseDetail(
                         Icon(
                             imageVector = Icons.Filled.FilterList,
                             contentDescription = if (checklistMode) "Ver todos" else "Checklist",
-                            tint = if (checklistMode) Color(0xFFE67E22) else MaterialTheme.colorScheme.onPrimary
+                            tint = if (checklistMode) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 },
@@ -182,7 +182,7 @@ fun SuitcaseDetail(
                                 text = if (displayedItems.isEmpty()) "¡Todo empacado!" else "${displayedItems.size} items por empacar",
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Medium,
-                                color = if (displayedItems.isEmpty()) Color(0xFF27AE60) else Color(0xFFE67E22)
+                                color = if (displayedItems.isEmpty()) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.secondary
                             )
                         }
                         HorizontalDivider()
@@ -215,14 +215,14 @@ fun SuitcaseDetail(
                                     .fillMaxWidth()
                                     .height(8.dp)
                                     .clip(RoundedCornerShape(50)),
-                                color = Color(0xFF27AE60),
+                                color = MaterialTheme.colorScheme.tertiary,
                                 trackColor = MaterialTheme.colorScheme.surfaceVariant
                             )
                         }
                         HorizontalDivider()
                     }
                 }
-                items(displayedItems, key = { it.id ?: it.nombre }) { item ->
+                items(displayedItems, key = { it.id.ifEmpty { it.nombre } }) { item ->
                     val dismissState = rememberSwipeToDismissBoxState(
                         confirmValueChange = { value ->
                             if (value == SwipeToDismissBoxValue.EndToStart) {
@@ -240,7 +240,7 @@ fun SuitcaseDetail(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .padding(horizontal = 16.dp, vertical = 4.dp)
-                                    .background(Color(0xFFE74C3C), RoundedCornerShape(12.dp))
+                                    .background(MaterialTheme.colorScheme.error, RoundedCornerShape(12.dp))
                                     .padding(end = 20.dp),
                                 contentAlignment = Alignment.CenterEnd
                             ) {
@@ -380,7 +380,7 @@ fun SuitcaseDetail(
                         showDeleteDialog = false
                         itemToDelete = null
                     }) {
-                        Text("Eliminar", color = Color(0xFFE74C3C))
+                        Text("Eliminar", color = MaterialTheme.colorScheme.error)
                     }
                 },
                 dismissButton = {

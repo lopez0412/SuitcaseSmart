@@ -59,12 +59,6 @@ import com.loptech.suitcasesmart.usecases.common.views.AddMaletaSheetForm
 import com.loptech.suitcasesmart.usecases.common.views.EventDialog
 import kotlinx.coroutines.launch
 
-enum class ProviderType {
-    BASIC,
-    GOOGLE,
-    FACEBOOK
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -172,7 +166,7 @@ fun HomeScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 contentPadding = PaddingValues(vertical = 8.dp)
             ) {
-                items(maletas, key = { it.id ?: it.nombre }) { maleta ->
+                items(maletas, key = { it.id.ifEmpty { it.nombre } }) { maleta ->
                     val dismissState = rememberSwipeToDismissBoxState(
                         confirmValueChange = { value ->
                             if (value == SwipeToDismissBoxValue.EndToStart) {
@@ -190,7 +184,7 @@ fun HomeScreen(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .padding(16.dp)
-                                    .background(Color(0xFFE74C3C), RoundedCornerShape(12.dp))
+                                    .background(MaterialTheme.colorScheme.error, RoundedCornerShape(12.dp))
                                     .padding(end = 20.dp),
                                 contentAlignment = Alignment.CenterEnd
                             ) {
@@ -207,7 +201,7 @@ fun HomeScreen(
                             maleta = maleta,
                             empacados = emp,
                             total = tot,
-                            onClick = { maleta.id?.let { navigateToDetail(it) } },
+                            onClick = { if (maleta.id.isNotEmpty()) navigateToDetail(maleta.id) },
                             onLongClick = {
                                 maletaToEdit = maleta
                                 showSheet = true
@@ -234,16 +228,16 @@ fun HomeScreen(
                     val editingMaleta = maletaToEdit
                     AddMaletaSheetForm(
                         initialMaleta = editingMaleta,
-                        onSave = { maletaOut ->
-                            if (editingMaleta?.id != null) {
-                                viewmodel.updateMaleta(userData.userId.toString(), editingMaleta.id!!, maletaOut, {
+                        onSave = { maleta ->
+                            if (editingMaleta != null && editingMaleta.id.isNotEmpty()) {
+                                viewmodel.updateMaleta(userData.userId.toString(), editingMaleta.id, maleta, {
                                     scope.launch { sheetState.hide() }.invokeOnCompletion { showSheet = false; maletaToEdit = null }
                                     scope.launch { snackbarHostState.showSnackbar("Maleta actualizada") }
                                 }, {
                                     scope.launch { sheetState.hide() }.invokeOnCompletion { showSheet = false; maletaToEdit = null }
                                 })
                             } else {
-                                viewmodel.addMaleta(userData.userId.toString(), maletaOut, {
+                                viewmodel.addMaleta(userData.userId.toString(), maleta, {
                                     scope.launch { sheetState.hide() }.invokeOnCompletion { showSheet = false }
                                     scope.launch { snackbarHostState.showSnackbar("Maleta agregada exitosamente") }
                                 }, {
@@ -279,13 +273,15 @@ fun HomeScreen(
                 text = { Text("¿Eliminar \"${maletaToDelete?.nombre}\"? Esta acción no se puede deshacer.") },
                 confirmButton = {
                     TextButton(onClick = {
-                        maletaToDelete?.id?.let { id ->
-                            viewmodel.deleteMaleta(userData.userId.toString(), id)
+                        maletaToDelete?.let { maleta ->
+                            if (maleta.id.isNotEmpty()) {
+                                viewmodel.deleteMaleta(userData.userId.toString(), maleta.id)
+                            }
                         }
                         showDeleteDialog = false
                         maletaToDelete = null
                     }) {
-                        Text("Eliminar", color = Color(0xFFE74C3C))
+                        Text("Eliminar", color = MaterialTheme.colorScheme.error)
                     }
                 },
                 dismissButton = {

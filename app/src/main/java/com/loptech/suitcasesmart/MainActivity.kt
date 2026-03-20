@@ -22,9 +22,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
-import com.google.firebase.remoteconfig.ktx.remoteConfig
+import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
 import com.loptech.suitcasesmart.firebase.GoogleAuthUiClient
 import com.loptech.suitcasesmart.usecases.login.SignInviewModel
@@ -115,11 +115,14 @@ class MainActivity : ComponentActivity() {
                             googleAuthUiClient.getSignedInUser()?.let { it1 ->
                                 ProfileScreen(
                                     userData = it1,
+                                    onBack = { navController.popBackStack() },
                                     onsignOut = {
                                         lifecycleScope.launch {
                                             googleAuthUiClient.signOut()
                                             Toast.makeText(applicationContext, "Signed Out", Toast.LENGTH_LONG).show()
-                                            navController.popBackStack()
+                                            navController.navigate(AppScreens.LoginScreen.route) {
+                                                popUpTo(0) { inclusive = true }
+                                            }
                                         }
                                     })
                             }

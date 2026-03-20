@@ -5,7 +5,6 @@ import com.google.firebase.firestore.ListenerRegistration
 import com.loptech.suitcasesmart.R
 import com.loptech.suitcasesmart.firebase.FirestoreDatabase
 import com.loptech.suitcasesmart.model.domain.Maleta
-import com.loptech.suitcasesmart.model.domain.MaletaOut
 import com.loptech.suitcasesmart.model.domain.StatusDatosMaletas
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,81 +23,62 @@ class HomeViewModel : ViewModel() {
 
     private val firebaseDatabase = FirestoreDatabase()
     private var maletasListener: ListenerRegistration? = null
+    private val itemListeners = mutableMapOf<String, ListenerRegistration>()
 
     override fun onCleared() {
         super.onCleared()
         maletasListener?.remove()
+        itemListeners.values.forEach { it.remove() }
     }
 
-    fun addMaleta(userId: String, maleta: MaletaOut, onSuccess: () -> Unit, onError: () -> Unit) {
+    fun getMaletas(userId: String) {
+        if (_maletas.value.isEmpty()) {
+            _status.update { it.copy(displayProgressBar = true) }
+        }
+        maletasListener?.remove()
+        maletasListener = firebaseDatabase.listenMaletas(userId) { list ->
+            _maletas.value = list
+            _status.update { it.copy(displayProgressBar = false) }
+            listenItemCounts(userId, list)
+        }
+    }
+
+    private fun listenItemCounts(userId: String, maletas: List<Maleta>) {
+        val currentIds = maletas.map { it.id }.filter { it.isNotEmpty() }.toSet()
+
+        // Remove listeners for deleted maletas
+        itemListeners.keys.filter { it !in currentIds }.forEach { id ->
+            itemListeners.remove(id)?.remove()
+            _progreso.update { it - id }
+        }
+
+        // Add listeners for new maletas (skip those already subscribed)
+        maletas.filter { it.id.isNotEmpty() && it.id !in itemListeners }.forEach { maleta ->
+            itemListeners[maleta.id] = firebaseDatabase.listenItems(userId, maleta.id) { items ->
+                val total = items.size
+                val empacados = items.count { it.estado == "empacado" || it.estado == "usado" }
+                _progreso.update { it + (maleta.id to Pair(empacados, total)) }
+            }
+        }
+    }
+
+    fun addMaleta(userId: String, maleta: Maleta, onSuccess: () -> Unit, onError: () -> Unit) {
         firebaseDatabase.addMaleta(userId, maleta).addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                _status.update {
-                    it.copy(
-                        createSuitcaseSuccessful = true,
-                        displayProgressBar = false,
-                        reload = true,
-                        documentReference = task.result
-                    )
-                }
+                _status.update { it.copy(displayProgressBar = false) }
                 onSuccess()
             } else {
                 _status.update {
-                    it.copy(
-                        createSuitcaseSuccessful = false,
-                        travelError = R.string.error_al_crear_viaje,
-                        displayProgressBar = false,
-                        reload = true
-                    )
+                    it.copy(travelError = R.string.error_al_crear_viaje, displayProgressBar = false)
                 }
                 onError()
             }
         }
     }
 
-    fun getMaletas(userId: String) {
-        _status.update { it.copy(displayProgressBar = true) }
-        maletasListener?.remove()
-        maletasListener = firebaseDatabase.listenMaletas(userId) { list ->
-            _maletas.value = list
-            _status.update { it.copy(displayProgressBar = false) }
-            loadItemCounts(userId, list)
-        }
-    }
-
-    private fun loadItemCounts(userId: String, maletas: List<Maleta>) {
-        val validMaletas = maletas.filter { it.id != null }
-        if (validMaletas.isEmpty()) return
-
-        val newCounts = mutableMapOf<String, Pair<Int, Int>>()
-        var completed = 0
-
-        for (maleta in validMaletas) {
-            val id = maleta.id!!
-            firebaseDatabase.getItems(userId, id).addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val snapshot = task.result
-                    val total = snapshot.size()
-                    val empacados = snapshot.documents.count { doc ->
-                        val estado = doc.getString("estado")
-                        estado == "empacado" || estado == "usado"
-                    }
-                    newCounts[id] = Pair(empacados, total)
-                }
-                completed++
-                if (completed == validMaletas.size) {
-                    _progreso.value = newCounts.toMap()
-                }
-            }
-        }
-    }
-
-    fun updateMaleta(userId: String, maletaId: String, maleta: MaletaOut, onSuccess: () -> Unit, onError: () -> Unit) {
+    fun updateMaleta(userId: String, maletaId: String, maleta: Maleta, onSuccess: () -> Unit, onError: () -> Unit) {
         _maletas.update { list ->
-            list.map { m ->
-                if (m.id == maletaId) m.copy(nombre = maleta.nombre, tipo = maleta.tipo, color = maleta.color, icono = maleta.icono)
-                else m
-            }
+            list.map { m -> if (m.id == maletaId) maleta.copy(id = maletaId) else m }
         }
         firebaseDatabase.updateMaleta(userId, maletaId, maleta).addOnCompleteListener { task ->
             if (task.isSuccessful) onSuccess() else onError()
@@ -108,7 +88,8 @@ class HomeViewModel : ViewModel() {
     fun deleteMaleta(userId: String, maletaId: String) {
         _maletas.update { it.filter { maleta -> maleta.id != maletaId } }
         _progreso.update { it - maletaId }
-        firebaseDatabase.deleteMaleta(userId, maletaId)
+        itemListeners.remove(maletaId)?.remove()
+        firebaseDatabase.deleteAllItemsAndMaleta(userId, maletaId)
     }
 
     fun hideErrorDialog() {

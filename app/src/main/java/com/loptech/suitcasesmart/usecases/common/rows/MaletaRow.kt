@@ -26,11 +26,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.loptech.suitcasesmart.model.domain.Maleta
 import com.loptech.suitcasesmart.usecases.common.hexToColor
 import com.loptech.suitcasesmart.usecases.common.maletaVisualForTipo
@@ -79,14 +77,13 @@ fun MaletaRow(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = maleta.nombre,
-                    fontFamily = FontFamily.SansSerif,
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = maleta.tipo,
-                    fontSize = 14.sp,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 if (total > 0) {
@@ -97,12 +94,12 @@ fun MaletaRow(
                             .fillMaxWidth()
                             .height(4.dp)
                             .clip(RoundedCornerShape(50)),
-                        color = Color(0xFF27AE60),
+                        color = MaterialTheme.colorScheme.tertiary,
                         trackColor = MaterialTheme.colorScheme.surfaceVariant
                     )
                     Text(
                         text = "$empacados de $total empacados",
-                        fontSize = 11.sp,
+                        style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }

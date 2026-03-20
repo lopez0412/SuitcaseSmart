@@ -1,108 +1,77 @@
 package com.loptech.suitcasesmart.firebase
 
 import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
-import com.google.firebase.firestore.QuerySnapshot
 import com.loptech.suitcasesmart.model.domain.Item
 import com.loptech.suitcasesmart.model.domain.Maleta
-import com.loptech.suitcasesmart.model.domain.MaletaOut
 
 class FirestoreDatabase {
     private val db = FirebaseFirestore.getInstance()
 
-    fun getMaletas(userId: String): Task<QuerySnapshot> {
-        return db.collection("users").document(userId).collection("maletas").get()
-    }
+    private fun userMaletas(userId: String): CollectionReference =
+        db.collection("users").document(userId).collection("maletas")
+
+    private fun maletaItems(userId: String, maletaId: String): CollectionReference =
+        userMaletas(userId).document(maletaId).collection("items")
 
     fun listenMaletas(userId: String, onUpdate: (List<Maleta>) -> Unit): ListenerRegistration {
-        return db.collection("users").document(userId).collection("maletas")
-            .addSnapshotListener { snapshot, _ ->
-                if (snapshot == null) return@addSnapshotListener
-                val list = snapshot.documents.mapNotNull { doc ->
-                    doc.toObject(Maleta::class.java)?.also { it.id = doc.id }
-                }
-                onUpdate(list)
-            }
+        return userMaletas(userId).addSnapshotListener { snapshot, _ ->
+            if (snapshot == null) return@addSnapshotListener
+            onUpdate(snapshot.documents.mapNotNull { it.toObject(Maleta::class.java) })
+        }
     }
 
     fun listenItems(userId: String, maletaId: String, onUpdate: (List<Item>) -> Unit): ListenerRegistration {
-        return db.collection("users").document(userId)
-            .collection("maletas").document(maletaId)
-            .collection("items")
-            .addSnapshotListener { snapshot, _ ->
-                if (snapshot == null) return@addSnapshotListener
-                val list = snapshot.documents.mapNotNull { doc ->
-                    doc.toObject(Item::class.java)?.also { it.id = doc.id }
-                }
-                onUpdate(list)
-            }
+        return maletaItems(userId, maletaId).addSnapshotListener { snapshot, _ ->
+            if (snapshot == null) return@addSnapshotListener
+            onUpdate(snapshot.documents.mapNotNull { it.toObject(Item::class.java) })
+        }
     }
 
-    fun addMaleta(userId: String, maleta: MaletaOut): Task<DocumentReference> {
-        return db.collection("users").document(userId).collection("maletas").add(maleta)
-    }
+    fun getMaletaById(userId: String, maletaId: String): DocumentReference =
+        userMaletas(userId).document(maletaId)
 
-    fun getMaletaById(userId: String, maletaId: String): DocumentReference {
-        return db.collection("users").document(userId).collection("maletas").document(maletaId)
-    }
+    fun addMaleta(userId: String, maleta: Maleta): Task<DocumentReference> =
+        userMaletas(userId).add(maleta)
 
-    fun addItem(userId: String, maletaId: String, item: Item): Task<DocumentReference> {
-        return db.collection("users").document(userId)
-            .collection("maletas").document(maletaId)
-            .collection("items").add(item)
-    }
-
-    fun getItems(userId: String, maletaId: String): Task<QuerySnapshot> {
-        return db.collection("users").document(userId)
-            .collection("maletas").document(maletaId)
-            .collection("items").get()
-    }
-
-    fun updateItemEstado(userId: String, maletaId: String, itemId: String, estado: String): Task<Void> {
-        return db.collection("users").document(userId)
-            .collection("maletas").document(maletaId)
-            .collection("items").document(itemId)
-            .update("estado", estado)
-    }
-
-    fun deleteMaleta(userId: String, maletaId: String): Task<Void> {
-        return db.collection("users").document(userId)
-            .collection("maletas").document(maletaId)
-            .delete()
-    }
-
-    fun updateMaleta(userId: String, maletaId: String, maleta: MaletaOut): Task<Void> {
-        return db.collection("users").document(userId)
-            .collection("maletas").document(maletaId)
-            .update(
-                mapOf(
-                    "nombre" to maleta.nombre,
-                    "tipo" to maleta.tipo,
-                    "color" to maleta.color,
-                    "icono" to maleta.icono
-                )
+    fun updateMaleta(userId: String, maletaId: String, maleta: Maleta): Task<Void> =
+        userMaletas(userId).document(maletaId).update(
+            mapOf(
+                "nombre" to maleta.nombre,
+                "tipo" to maleta.tipo,
+                "color" to maleta.color,
+                "icono" to maleta.icono
             )
+        )
+
+    fun deleteAllItemsAndMaleta(userId: String, maletaId: String) {
+        val maletaRef = userMaletas(userId).document(maletaId)
+        maletaItems(userId, maletaId).get().addOnSuccessListener { snapshot ->
+            val batch = db.batch()
+            snapshot.documents.forEach { batch.delete(it.reference) }
+            batch.delete(maletaRef)
+            batch.commit()
+        }
     }
 
-    fun updateItem(userId: String, maletaId: String, itemId: String, item: Item): Task<Void> {
-        return db.collection("users").document(userId)
-            .collection("maletas").document(maletaId)
-            .collection("items").document(itemId)
-            .update(
-                mapOf(
-                    "nombre" to item.nombre,
-                    "categoria" to item.categoria,
-                    "cantidad" to item.cantidad
-                )
+    fun addItem(userId: String, maletaId: String, item: Item): Task<DocumentReference> =
+        maletaItems(userId, maletaId).add(item)
+
+    fun updateItemEstado(userId: String, maletaId: String, itemId: String, estado: String): Task<Void> =
+        maletaItems(userId, maletaId).document(itemId).update("estado", estado)
+
+    fun updateItem(userId: String, maletaId: String, itemId: String, item: Item): Task<Void> =
+        maletaItems(userId, maletaId).document(itemId).update(
+            mapOf(
+                "nombre" to item.nombre,
+                "categoria" to item.categoria,
+                "cantidad" to item.cantidad
             )
-    }
+        )
 
-    fun deleteItem(userId: String, maletaId: String, itemId: String): Task<Void> {
-        return db.collection("users").document(userId)
-            .collection("maletas").document(maletaId)
-            .collection("items").document(itemId)
-            .delete()
-    }
+    fun deleteItem(userId: String, maletaId: String, itemId: String): Task<Void> =
+        maletaItems(userId, maletaId).document(itemId).delete()
 }

@@ -42,7 +42,6 @@ import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.loptech.suitcasesmart.model.domain.Maleta
-import com.loptech.suitcasesmart.model.domain.MaletaOut
 import com.loptech.suitcasesmart.usecases.common.MALETA_COLOR_OPTIONS
 import com.loptech.suitcasesmart.usecases.common.hexToColor
 import com.loptech.suitcasesmart.usecases.common.iconoForTipo
@@ -52,7 +51,7 @@ import com.loptech.suitcasesmart.usecases.common.maletaVisualForTipo
 @Composable
 fun AddMaletaSheetForm(
     initialMaleta: Maleta? = null,
-    onSave: (MaletaOut) -> Unit,
+    onSave: (Maleta) -> Unit,
     onDissmiss: () -> Unit
 ) {
     val isEditing = initialMaleta != null
@@ -60,6 +59,7 @@ fun AddMaletaSheetForm(
     var tipo by remember { mutableStateOf(initialMaleta?.tipo ?: "") }
     var expanded by remember { mutableStateOf(false) }
     var selectedColorHex by remember { mutableStateOf(initialMaleta?.color ?: "") }
+    var submitted by remember { mutableStateOf(false) }
     val tipos = listOf("carry-on", "grande", "mochila", "personal")
 
     Column(
@@ -83,10 +83,14 @@ fun AddMaletaSheetForm(
             value = nombre,
             onValueChange = { nombre = it },
             label = { Text("Nombre") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            isError = submitted && nombre.isBlank(),
+            supportingText = if (submitted && nombre.isBlank()) {
+                { Text("El nombre es requerido") }
+            } else null
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
         ExposedDropdownMenuBox(
             expanded = expanded,
@@ -101,7 +105,11 @@ fun AddMaletaSheetForm(
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                 modifier = Modifier
                     .menuAnchor()
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                isError = submitted && tipo.isEmpty(),
+                supportingText = if (submitted && tipo.isEmpty()) {
+                    { Text("Selecciona un tipo") }
+                } else null
             )
             ExposedDropdownMenu(
                 expanded = expanded,
@@ -160,6 +168,17 @@ fun AddMaletaSheetForm(
             }
         }
 
+        if (submitted && selectedColorHex.isEmpty()) {
+            Text(
+                text = "Selecciona un color",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp)
+            )
+        }
+
         // Preview: icono en el color seleccionado
         AnimatedVisibility(visible = tipo.isNotEmpty()) {
             val visual = maletaVisualForTipo(tipo)
@@ -194,16 +213,18 @@ fun AddMaletaSheetForm(
         ) {
             Button(
                 onClick = {
-                    onSave(
-                        MaletaOut(
-                            nombre = nombre,
-                            tipo = tipo,
-                            color = selectedColorHex,
-                            icono = iconoForTipo(tipo)
+                    submitted = true
+                    if (nombre.isNotBlank() && tipo.isNotEmpty() && selectedColorHex.isNotEmpty()) {
+                        onSave(
+                            Maleta(
+                                nombre = nombre,
+                                tipo = tipo,
+                                color = selectedColorHex,
+                                icono = iconoForTipo(tipo)
+                            )
                         )
-                    )
-                },
-                enabled = nombre.isNotEmpty() && tipo.isNotEmpty() && selectedColorHex.isNotEmpty()
+                    }
+                }
             ) {
                 Text("Guardar")
             }

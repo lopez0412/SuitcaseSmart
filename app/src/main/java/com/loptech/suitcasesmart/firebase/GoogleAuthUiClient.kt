@@ -8,9 +8,9 @@ import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.firebase.Firebase
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.auth.auth
 import com.loptech.suitcasesmart.R
 import com.loptech.suitcasesmart.model.domain.SignInresult
 import com.loptech.suitcasesmart.model.domain.UserData

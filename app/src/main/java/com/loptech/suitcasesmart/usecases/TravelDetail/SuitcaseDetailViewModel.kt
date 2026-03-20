@@ -41,9 +41,8 @@ class TravelDetailViewModel : ViewModel() {
         maletaListener = firebaseDatabase.getMaletaById(userId, maletaId)
             .addSnapshotListener { snapshot, _ ->
                 if (snapshot != null && snapshot.exists()) {
-                    val maleta = snapshot.toObject(Maleta::class.java)!!
-                    maleta.id = snapshot.id
-                    _maleta.value = maleta
+                    // @DocumentId populates id automatically
+                    snapshot.toObject(Maleta::class.java)?.let { _maleta.value = it }
                 }
             }
     }
@@ -66,22 +65,22 @@ class TravelDetailViewModel : ViewModel() {
         _items.update { list ->
             list.map { if (it.id == item.id) it.copy(estado = nuevoEstado) else it }
         }
-        item.id?.let { itemId ->
-            firebaseDatabase.updateItemEstado(userId, maletaId, itemId, nuevoEstado)
+        if (item.id.isNotEmpty()) {
+            firebaseDatabase.updateItemEstado(userId, maletaId, item.id, nuevoEstado)
         }
     }
 
     fun updateItem(userId: String, maletaId: String, item: Item) {
         _items.update { list -> list.map { if (it.id == item.id) item else it } }
-        item.id?.let { itemId ->
-            firebaseDatabase.updateItem(userId, maletaId, itemId, item)
+        if (item.id.isNotEmpty()) {
+            firebaseDatabase.updateItem(userId, maletaId, item.id, item)
         }
     }
 
     fun deleteItem(userId: String, maletaId: String, item: Item) {
         _items.update { list -> list.filter { it.id != item.id } }
-        item.id?.let { itemId ->
-            firebaseDatabase.deleteItem(userId, maletaId, itemId)
+        if (item.id.isNotEmpty()) {
+            firebaseDatabase.deleteItem(userId, maletaId, item.id)
         }
     }
 }

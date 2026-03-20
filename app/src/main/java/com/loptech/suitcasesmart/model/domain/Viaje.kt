@@ -1,16 +1,9 @@
 package com.loptech.suitcasesmart.model.domain
 
-import com.google.firebase.firestore.Exclude
+import com.google.firebase.firestore.DocumentId
 
 data class Maleta(
-    @get:Exclude var id: String? = null,
-    val nombre: String = "",
-    val tipo: String = "",
-    val color: String = "",
-    val icono: String = ""
-)
-
-data class MaletaOut(
+    @DocumentId val id: String = "",
     val nombre: String = "",
     val tipo: String = "",
     val color: String = "",
@@ -18,7 +11,7 @@ data class MaletaOut(
 )
 
 data class Item(
-    @get:Exclude var id: String? = null,
+    @DocumentId val id: String = "",
     val nombre: String = "",
     val categoria: String = "",
     val cantidad: Int = 0,

@@ -11,7 +11,8 @@
       "Bash(powershell.exe -Command \"systeminfo\")",
       "Bash(powershell.exe -Command \"systeminfo | Out-String\")",
       "Bash(powershell.exe -Command \"Get-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V | Select-Object FeatureName, State\")",
-      "Bash(git mv:*)"
+      "Bash(git mv:*)",
+      "WebSearch"
     ]
   }
 }

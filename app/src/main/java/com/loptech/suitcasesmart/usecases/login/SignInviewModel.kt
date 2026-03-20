@@ -3,8 +3,8 @@ package com.loptech.suitcasesmart.usecases.login
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.loptech.suitcasesmart.R
 import com.loptech.suitcasesmart.model.domain.SignInState
 import com.loptech.suitcasesmart.model.domain.SignInresult

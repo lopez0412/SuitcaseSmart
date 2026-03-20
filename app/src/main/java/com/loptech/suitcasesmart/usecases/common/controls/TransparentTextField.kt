@@ -23,7 +23,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.loptech.suitcasesmart.ui.theme.MainGrey20
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Suppress("DEPRECATION")
 @Composable
 fun TransparentTextField(
     modifier: Modifier = Modifier,
@@ -52,8 +51,11 @@ fun TransparentTextField(
         ),
         keyboardActions = keyboardActions,
         visualTransformation = visualTransformation,
-        colors = TextFieldDefaults.textFieldColors(
-            Color.Black, containerColor = MainGrey20
+        colors = TextFieldDefaults.colors(
+            focusedTextColor = Color.Black,
+            unfocusedTextColor = Color.Black,
+            focusedContainerColor = MainGrey20,
+            unfocusedContainerColor = MainGrey20
         )
     )
 }
