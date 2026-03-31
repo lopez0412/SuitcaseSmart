@@ -2,6 +2,7 @@ package com.loptech.suitcasesmart.usecases.common.rows
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,10 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -27,9 +24,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.loptech.suitcasesmart.model.domain.Maleta
+import com.loptech.suitcasesmart.ui.theme.AmberPendingBg
+import com.loptech.suitcasesmart.ui.theme.GreenPackedBg
 import com.loptech.suitcasesmart.usecases.common.hexToColor
 import com.loptech.suitcasesmart.usecases.common.maletaVisualForTipo
 
@@ -44,78 +43,110 @@ fun MaletaRow(
 ) {
     val visual = maletaVisualForTipo(maleta.tipo)
     val iconColor = if (maleta.color.isNotEmpty()) hexToColor(maleta.color) else visual.color
+    val pending = total - empacados
 
-    Card(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
-            .combinedClickable(onClick = onClick, onLongClick = onLongClick),
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+            .padding(horizontal = 16.dp, vertical = 6.dp)
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f), RoundedCornerShape(18.dp))
+            .clip(RoundedCornerShape(18.dp))
+            .background(MaterialTheme.colorScheme.surface)
+            .combinedClickable(onClick = onClick, onLongClick = onLongClick)
     ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+        // Lateral accent bar
+        Box(
+            modifier = Modifier
+                .width(4.dp)
+                .height(88.dp)
+                .background(iconColor)
+        )
+
+        // Icon wrapper
+        Box(
+            modifier = Modifier
+                .padding(start = 12.dp, top = 16.dp)
+                .size(48.dp)
+                .background(iconColor.copy(alpha = 0.12f), RoundedCornerShape(14.dp)),
+            contentAlignment = Alignment.Center
         ) {
-            Box(
-                modifier = Modifier
-                    .size(44.dp)
-                    .background(color = iconColor, shape = RoundedCornerShape(12.dp)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = visual.icon,
-                    contentDescription = maleta.tipo,
-                    tint = Color.White,
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.width(12.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = maleta.nombre,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Text(
-                    text = maleta.tipo,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                if (total > 0) {
-                    Spacer(modifier = Modifier.height(6.dp))
-                    LinearProgressIndicator(
-                        progress = { empacados.toFloat() / total },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(4.dp)
-                            .clip(RoundedCornerShape(50)),
-                        color = MaterialTheme.colorScheme.tertiary,
-                        trackColor = MaterialTheme.colorScheme.surfaceVariant
-                    )
-                    Text(
-                        text = "$empacados de $total empacados",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-
             Icon(
-                imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
-                contentDescription = "Move Forward",
-                tint = MaterialTheme.colorScheme.primary
+                imageVector = visual.icon,
+                contentDescription = maleta.tipo,
+                tint = iconColor,
+                modifier = Modifier.size(24.dp)
             )
         }
-    }
-}
 
-@Preview
-@Composable
-fun MaletaRowPreview() {
-    MaletaRow(Maleta(nombre = "Mi Maleta", tipo = "carry-on"), onClick = {})
+        Spacer(modifier = Modifier.width(12.dp))
+
+        // Content
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(top = 14.dp, end = 12.dp, bottom = 12.dp)
+        ) {
+            Text(
+                text = maleta.nombre,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = maleta.tipo,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            if (total > 0) {
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Stat pills
+                Row {
+                    if (pending > 0) {
+                        Box(
+                            modifier = Modifier
+                                .background(AmberPendingBg, RoundedCornerShape(50.dp))
+                                .padding(horizontal = 8.dp, vertical = 3.dp)
+                        ) {
+                            Text(
+                                text = "$pending pendientes",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = Color(0xFFE67E22)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(6.dp))
+                    }
+                    if (empacados > 0) {
+                        Box(
+                            modifier = Modifier
+                                .background(GreenPackedBg, RoundedCornerShape(50.dp))
+                                .padding(horizontal = 8.dp, vertical = 3.dp)
+                        ) {
+                            Text(
+                                text = "$empacados empacados",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = Color(0xFF27AE60)
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Colored progress bar
+                LinearProgressIndicator(
+                    progress = { empacados.toFloat() / total },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(5.dp)
+                        .clip(RoundedCornerShape(50)),
+                    color = iconColor,
+                    trackColor = iconColor.copy(alpha = 0.15f)
+                )
+            }
+        }
+    }
 }

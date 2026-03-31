@@ -27,3 +27,12 @@ val DarkTeal20 = Color(0xFF037971)
 // Auth screens
 val AviationNavy = Color(0xFF0A2342)      // Deep navy sky — primary en light mode
 val AviationNavyLight = Color(0xFF5B9BD5) // Sky blue — primary en dark mode
+
+// UI Refresh tokens
+val SkyBlue = AviationNavyLight           // Alias: progress fill, checkboxes
+val SkyPale = Color(0xFFE8F1FA)           // Very light blue background
+val SkyLight = Color(0xFFB3D1EE)          // Light sky blue (back buttons on navy)
+val GreenPacked = Color(0xFF27AE60)       // Green for "empacado"/"usado" checkboxes
+val GreenPackedBg = Color(0xFFE8F8F0)     // Light green pill background
+val AmberPendingBg = Color(0xFFFEF3E7)    // Light amber pill background
+val GrayUsedBg = Color(0xFFF2F3F3)        // Light gray for "usado" state

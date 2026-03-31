@@ -11,29 +11,29 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -44,15 +44,13 @@ import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberSwipeToDismissBoxState
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -60,16 +58,23 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.loptech.suitcasesmart.model.domain.Item
 import com.loptech.suitcasesmart.model.domain.StatusDatosMaletas
 import com.loptech.suitcasesmart.model.domain.UserData
-import com.loptech.suitcasesmart.usecases.common.estadoColor
-import com.loptech.suitcasesmart.usecases.common.estadoLabel
+import com.loptech.suitcasesmart.ui.theme.AmberPendingBg
+import com.loptech.suitcasesmart.ui.theme.AviationNavy
+import com.loptech.suitcasesmart.ui.theme.AviationNavyLight
+import com.loptech.suitcasesmart.ui.theme.GreenPacked
+import com.loptech.suitcasesmart.ui.theme.GreenPackedBg
+import com.loptech.suitcasesmart.ui.theme.SkyLight
+import com.loptech.suitcasesmart.usecases.common.hexToColor
+import com.loptech.suitcasesmart.usecases.common.maletaVisualForTipo
 import com.loptech.suitcasesmart.usecases.common.views.AddItemSheetForm
 import com.loptech.suitcasesmart.usecases.common.views.EventDialog
 import kotlinx.coroutines.launch
@@ -83,12 +88,11 @@ fun SuitcaseDetail(
     maletaId: String,
     onBack: () -> Unit
 ) {
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var showSheet by remember { mutableStateOf(false) }
-    var checklistMode by remember { mutableStateOf(false) }
+    var selectedTab by remember { mutableIntStateOf(0) }
     var itemToEdit by remember { mutableStateOf<Item?>(null) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     var itemToDelete by remember { mutableStateOf<Item?>(null) }
@@ -96,52 +100,122 @@ fun SuitcaseDetail(
     val maleta by viewmodel.maleta.collectAsState()
     val itemsList by viewmodel.items.collectAsState()
 
+    val total = itemsList.size
+    val empacados = itemsList.count { it.estado == "empacado" || it.estado == "usado" }
+
     LaunchedEffect(key1 = Unit) {
         viewmodel.getMaleta(userData.userId.toString(), maletaId)
         viewmodel.getItems(userData.userId.toString(), maletaId)
     }
 
+    val tabLabels = listOf("Todos", "Por empacar", "Empacado", "Usado")
+    val tabEstados = listOf(null, "por_empacar", "empacado", "usado")
+    val displayedItems = tabEstados[selectedTab]?.let { estado ->
+        itemsList.filter { it.estado == estado }
+    } ?: itemsList
+
+    val visual = maletaVisualForTipo(maleta.tipo)
+    val iconColor = if (maleta.color.isNotEmpty()) hexToColor(maleta.color) else visual.color
+
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            TopAppBar(
-                title = { Text(if (checklistMode) "Por empacar" else maleta.nombre.ifEmpty { "Maleta" }) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(AviationNavy)
+                    .windowInsetsPadding(WindowInsets.statusBars)
+            ) {
+                // Back button
+                Row(
+                    modifier = Modifier
+                        .padding(start = 16.dp, top = 12.dp, bottom = 4.dp)
+                        .clickable { onBack() },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Volver",
+                        tint = SkyLight,
+                        modifier = Modifier.size(14.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(text = "Mis Maletas", color = SkyLight, fontSize = 12.sp, fontWeight = FontWeight.Medium)
+                }
+
+                // Maleta info row
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(52.dp)
+                            .background(AviationNavyLight.copy(alpha = 0.2f), RoundedCornerShape(16.dp)),
+                        contentAlignment = Alignment.Center
+                    ) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Volver",
-                            tint = MaterialTheme.colorScheme.onPrimary
+                            imageVector = visual.icon,
+                            contentDescription = null,
+                            tint = SkyLight,
+                            modifier = Modifier.size(28.dp)
                         )
                     }
-                },
-                colors = TopAppBarDefaults.mediumTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
-                ),
-                actions = {
-                    IconButton(onClick = { checklistMode = !checklistMode }) {
-                        Icon(
-                            imageVector = Icons.Filled.FilterList,
-                            contentDescription = if (checklistMode) "Ver todos" else "Checklist",
-                            tint = if (checklistMode) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onPrimary
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Column {
+                        Text(
+                            text = maleta.nombre.ifEmpty { "Maleta" },
+                            color = Color.White,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "${maleta.tipo} · $total item${if (total != 1) "s" else ""}",
+                            color = SkyLight.copy(alpha = 0.8f),
+                            fontSize = 11.sp
                         )
                     }
-                },
-                scrollBehavior = scrollBehavior
-            )
+                }
+
+                // Progress bar with counter
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    LinearProgressIndicator(
+                        progress = { if (total > 0) empacados.toFloat() / total else 0f },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(6.dp),
+                        color = AviationNavyLight,
+                        trackColor = Color.White.copy(alpha = 0.25f)
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text(
+                        text = "$empacados/$total",
+                        color = SkyLight,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
         },
         floatingActionButton = {
-            FloatingActionButton(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                shape = CircleShape,
-                onClick = {
-                    itemToEdit = null
-                    showSheet = true
-                }
+            Box(
+                modifier = Modifier
+                    .size(52.dp)
+                    .shadow(elevation = 6.dp, shape = RoundedCornerShape(16.dp))
+                    .background(AviationNavy, RoundedCornerShape(16.dp))
+                    .clickable {
+                        itemToEdit = null
+                        showSheet = true
+                    },
+                contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Filled.Add, "Agregar item")
+                Icon(Icons.Filled.Add, "Agregar item", tint = Color.White, modifier = Modifier.size(24.dp))
             }
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
@@ -160,151 +234,95 @@ fun SuitcaseDetail(
                 )
             }
         } else {
-            val total = itemsList.size
-            val empacados = itemsList.count { it.estado == "empacado" || it.estado == "usado" }
-            val displayedItems = if (checklistMode) itemsList.filter { it.estado == "por_empacar" } else itemsList
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding),
-                contentPadding = PaddingValues(vertical = 8.dp)
+                contentPadding = PaddingValues(bottom = 80.dp)
             ) {
-                item {
-                    if (checklistMode) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 12.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = if (displayedItems.isEmpty()) "¡Todo empacado!" else "${displayedItems.size} items por empacar",
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = if (displayedItems.isEmpty()) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.secondary
-                            )
-                        }
-                        HorizontalDivider()
-                    } else if (total > 0) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 12.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    text = "Progreso de empaque",
-                                    fontSize = 14.sp,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                                Text(
-                                    text = "$empacados de $total empacados",
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.Medium,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(6.dp))
-                            LinearProgressIndicator(
-                                progress = { empacados.toFloat() / total },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(8.dp)
-                                    .clip(RoundedCornerShape(50)),
-                                color = MaterialTheme.colorScheme.tertiary,
-                                trackColor = MaterialTheme.colorScheme.surfaceVariant
-                            )
-                        }
-                        HorizontalDivider()
-                    }
-                }
-                items(displayedItems, key = { it.id.ifEmpty { it.nombre } }) { item ->
-                    val dismissState = rememberSwipeToDismissBoxState(
-                        confirmValueChange = { value ->
-                            if (value == SwipeToDismissBoxValue.EndToStart) {
-                                itemToDelete = item
-                                showDeleteDialog = true
-                            }
-                            false
-                        }
-                    )
-                    SwipeToDismissBox(
-                        state = dismissState,
-                        enableDismissFromStartToEnd = false,
-                        backgroundContent = {
+                // Filter tabs
+                item(key = "tabs") {
+                    LazyRow(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(tabLabels.size) { idx ->
+                            val active = selectedTab == idx
                             Box(
                                 modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(horizontal = 16.dp, vertical = 4.dp)
-                                    .background(MaterialTheme.colorScheme.error, RoundedCornerShape(12.dp))
-                                    .padding(end = 20.dp),
-                                contentAlignment = Alignment.CenterEnd
+                                    .background(
+                                        if (active) AviationNavy else MaterialTheme.colorScheme.surfaceVariant,
+                                        RoundedCornerShape(100.dp)
+                                    )
+                                    .clickable { selectedTab = idx }
+                                    .padding(horizontal = 14.dp, vertical = 7.dp)
                             ) {
-                                Icon(
-                                    imageVector = Icons.Filled.Delete,
-                                    contentDescription = "Eliminar",
-                                    tint = Color.White
+                                Text(
+                                    text = tabLabels[idx],
+                                    fontSize = 13.sp,
+                                    fontWeight = if (active) FontWeight.SemiBold else FontWeight.Normal,
+                                    color = if (active) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         }
-                    ) {
-                        Card(
+                    }
+                }
+
+                // Items agrupados por categoría
+                val grouped = displayedItems.groupBy { it.categoria }
+                grouped.forEach { (categoria, itemsInGroup) ->
+                    item(key = "cat_$categoria") {
+                        Text(
+                            text = categoria.replaceFirstChar { it.uppercase() },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 4.dp)
-                                .combinedClickable(
-                                    onClick = {},
-                                    onLongClick = {
-                                        itemToEdit = item
-                                        showSheet = true
-                                    }
-                                ),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(16.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(
-                                        text = item.nombre,
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.onSurface
-                                    )
-                                    Text(
-                                        text = "${item.categoria} · Cant: ${item.cantidad}",
-                                        fontSize = 14.sp,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                                .padding(top = if (categoria == grouped.keys.first()) 0.dp else 4.dp),
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                letterSpacing = androidx.compose.ui.unit.TextUnit(0.12f, androidx.compose.ui.unit.TextUnitType.Em)
+                            ),
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                    items(itemsInGroup, key = { it.id.ifEmpty { it.nombre } }) { item ->
+                        val dismissState = rememberSwipeToDismissBoxState(
+                            confirmValueChange = { value ->
+                                if (value == SwipeToDismissBoxValue.EndToStart) {
+                                    itemToDelete = item
+                                    showDeleteDialog = true
                                 }
-                                val color = estadoColor(item.estado)
+                                false
+                            }
+                        )
+                        SwipeToDismissBox(
+                            state = dismissState,
+                            enableDismissFromStartToEnd = false,
+                            backgroundContent = {
                                 Box(
                                     modifier = Modifier
-                                        .background(
-                                            color = color.copy(alpha = 0.15f),
-                                            shape = RoundedCornerShape(50)
-                                        )
-                                        .border(1.dp, color, RoundedCornerShape(50))
-                                        .clickable {
-                                            userData.userId?.let {
-                                                viewmodel.updateEstado(it, maletaId, item)
-                                            }
-                                        }
-                                        .padding(horizontal = 10.dp, vertical = 4.dp)
+                                        .fillMaxSize()
+                                        .padding(horizontal = 16.dp, vertical = 4.dp)
+                                        .background(MaterialTheme.colorScheme.error, RoundedCornerShape(14.dp))
+                                        .padding(end = 20.dp),
+                                    contentAlignment = Alignment.CenterEnd
                                 ) {
-                                    Text(
-                                        text = estadoLabel(item.estado),
-                                        fontSize = 12.sp,
-                                        fontWeight = FontWeight.Medium,
-                                        color = color
-                                    )
+                                    Icon(Icons.Filled.Delete, "Eliminar", tint = Color.White)
                                 }
                             }
+                        ) {
+                            ItemRow(
+                                item = item,
+                                onCheckboxClick = {
+                                    userData.userId?.let { viewmodel.updateEstado(it, maletaId, item) }
+                                },
+                                onLongClick = {
+                                    itemToEdit = item
+                                    showSheet = true
+                                }
+                            )
                         }
                     }
                 }
@@ -391,6 +409,98 @@ fun SuitcaseDetail(
                         Text("Cancelar")
                     }
                 }
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun ItemRow(
+    item: Item,
+    onCheckboxClick: () -> Unit,
+    onLongClick: () -> Unit = {}
+) {
+    val isUsado = item.estado == "usado"
+    val isEmpacado = item.estado == "empacado"
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp)
+            .border(
+                1.dp,
+                MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f),
+                RoundedCornerShape(14.dp)
+            )
+            .clip(RoundedCornerShape(14.dp))
+            .background(MaterialTheme.colorScheme.surface)
+            .combinedClickable(onClick = {}, onLongClick = onLongClick)
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Checkbox
+        val checkboxBg = when (item.estado) {
+            "empacado" -> AviationNavyLight
+            "usado"    -> GreenPacked
+            else       -> null
+        }
+        Box(
+            modifier = Modifier
+                .size(22.dp)
+                .then(
+                    if (checkboxBg != null)
+                        Modifier.background(checkboxBg, RoundedCornerShape(8.dp))
+                    else
+                        Modifier.border(1.5.dp, Color.LightGray, RoundedCornerShape(8.dp))
+                )
+                .clickable { onCheckboxClick() },
+            contentAlignment = Alignment.Center
+        ) {
+            if (checkboxBg != null) {
+                Icon(
+                    imageVector = Icons.Filled.Check,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(14.dp)
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.width(12.dp))
+
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = item.nombre,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 15.sp,
+                color = if (isUsado) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                        else MaterialTheme.colorScheme.onSurface,
+                textDecoration = if (isUsado) TextDecoration.LineThrough else null
+            )
+            Text(
+                text = "${item.categoria} · ${item.cantidad} ud.",
+                fontSize = 13.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+
+        // Estado badge
+        val (badgeBg, badgeText, badgeColor) = when (item.estado) {
+            "empacado"    -> Triple(AviationNavyLight.copy(alpha = 0.12f), "Empacado",   AviationNavyLight)
+            "usado"       -> Triple(GreenPackedBg,                          "Usado",       GreenPacked)
+            else          -> Triple(AmberPendingBg,                         "Pendiente",   Color(0xFFE67E22))
+        }
+        Box(
+            modifier = Modifier
+                .background(badgeBg, RoundedCornerShape(50.dp))
+                .padding(horizontal = 8.dp, vertical = 4.dp)
+        ) {
+            Text(
+                text = badgeText,
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Medium,
+                color = badgeColor
             )
         }
     }

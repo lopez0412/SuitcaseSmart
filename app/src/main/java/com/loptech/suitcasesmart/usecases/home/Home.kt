@@ -1,29 +1,24 @@
 package com.loptech.suitcasesmart.usecases.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.automirrored.filled.ExitToApp
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -39,7 +34,6 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,12 +42,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import com.loptech.suitcasesmart.model.domain.Maleta
 import com.loptech.suitcasesmart.model.domain.StatusDatosMaletas
 import com.loptech.suitcasesmart.model.domain.UserData
+import com.loptech.suitcasesmart.ui.theme.AviationNavy
 import com.loptech.suitcasesmart.usecases.common.rows.MaletaRow
 import com.loptech.suitcasesmart.usecases.common.views.AddMaletaSheetForm
 import com.loptech.suitcasesmart.usecases.common.views.EventDialog
@@ -65,14 +61,11 @@ fun HomeScreen(
     userData: UserData,
     state: StatusDatosMaletas,
     viewmodel: HomeViewModel,
-    navigateToDetail: (String) -> Unit,
-    navigateToProfile: () -> Unit,
-    onSignOut: () -> Unit
+    navigateToDetail: (String) -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
-    var menuExpanded by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var showSheet by remember { mutableStateOf(false) }
     var maletaToEdit by remember { mutableStateOf<Maleta?>(null) }
@@ -82,63 +75,45 @@ fun HomeScreen(
     val maletas by viewmodel.maletas.collectAsState()
     val progreso by viewmodel.progreso.collectAsState()
 
-    LaunchedEffect(key1 = Unit) {
-        viewmodel.getMaletas(userData.userId.toString())
-    }
-
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBar(
-                title = { Text("Mis Maletas") },
-                colors = TopAppBarDefaults.mediumTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
-                ),
-                actions = {
-                    IconButton(onClick = { menuExpanded = true }) {
-                        Icon(
-                            imageVector = Icons.Filled.Menu,
-                            contentDescription = "Menu",
-                            tint = MaterialTheme.colorScheme.onPrimary
+                title = {
+                    Column {
+                        Text(
+                            text = "Mis Maletas",
+                            style = MaterialTheme.typography.titleLarge
                         )
-                    }
-                    DropdownMenu(
-                        expanded = menuExpanded,
-                        onDismissRequest = { menuExpanded = false }
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text("Mi perfil") },
-                            leadingIcon = { Icon(Icons.Filled.AccountCircle, contentDescription = null) },
-                            onClick = {
-                                menuExpanded = false
-                                navigateToProfile()
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = { Text("Cerrar sesión") },
-                            leadingIcon = { Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = null) },
-                            onClick = {
-                                menuExpanded = false
-                                onSignOut()
-                            }
-                        )
+                        if (maletas.isNotEmpty()) {
+                            Text(
+                                text = "${maletas.size} maleta${if (maletas.size != 1) "s" else ""}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     }
                 },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface
+                ),
                 scrollBehavior = scrollBehavior
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                shape = CircleShape,
-                onClick = {
-                    maletaToEdit = null
-                    showSheet = true
-                }
+            Box(
+                modifier = Modifier
+                    .size(52.dp)
+                    .shadow(elevation = 6.dp, shape = RoundedCornerShape(16.dp))
+                    .background(AviationNavy, RoundedCornerShape(16.dp))
+                    .clickable {
+                        maletaToEdit = null
+                        showSheet = true
+                    },
+                contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Filled.Add, "Agregar maleta")
+                Icon(Icons.Filled.Add, "Agregar maleta", tint = Color.White, modifier = Modifier.size(24.dp))
             }
         },
         snackbarHost = {
@@ -184,7 +159,7 @@ fun HomeScreen(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .padding(16.dp)
-                                    .background(MaterialTheme.colorScheme.error, RoundedCornerShape(12.dp))
+                                    .background(MaterialTheme.colorScheme.error, RoundedCornerShape(18.dp))
                                     .padding(end = 20.dp),
                                 contentAlignment = Alignment.CenterEnd
                             ) {

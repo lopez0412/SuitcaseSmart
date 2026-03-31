@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SuitcaseSmart — Wireframes</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0A2342;
+    --sky: #5B9BD5;
+    --sky-light: #A8CAEC;
+    --sky-pale: #EBF4FC;
+    --white: #FFFFFF;
+    --gray-50: #F8FAFC;
+    --gray-100: #F1F5F9;
+    --gray-200: #E2E8F0;
+    --gray-400: #94A3B8;
+    --gray-600: #475569;
+    --gray-800: #1E293B;
+    --success: #22C55E;
+    --warn: #F59E0B;
+    --accent: #E8F1FA;
+    --phone-w: 320px;
+    --phone-h: 640px;
+    --radius-card: 18px;
+    --radius-pill: 100px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #0D1B2E;
+    min-height: 100vh;
+    padding: 48px 32px;
+  }
+
+  h1.page-title {
+    font-family: 'Sora', sans-serif;
+    color: var(--white);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0.5;
+    text-align: center;
+    margin-bottom: 8px;
+  }
+  h2.brand {
+    font-family: 'Sora', sans-serif;
+    color: var(--sky);
+    font-size: 28px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 56px;
+    letter-spacing: -0.5px;
+  }
+
+  .screens-row {
+    display: flex;
+    gap: 32px;
+    justify-content: center;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .screen-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .screen-label {
+    font-family: 'Sora', sans-serif;
+    color: var(--sky-light);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    opacity: 0.8;
+  }
+
+  /* Phone shell */
+  .phone {
+    width: var(--phone-w);
+    height: var(--phone-h);
+    background: var(--white);
+    border-radius: 40px;
+    overflow: hidden;
+    position: relative;
+    box-shadow:
+      0 0 0 10px #1a2d45,
+      0 0 0 11px #233a55,
+      0 40px 80px rgba(0,0,0,0.6);
+  }
+
+  /* Notch */
+  .phone::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 100px; height: 28px;
+    background: #1a2d45;
+    border-radius: 0 0 20px 20px;
+    z-index: 100;
+  }
+
+  .screen {
+    width: 100%;
+    height: 100%;
+    background: var(--gray-50);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ─── STATUS BAR ─── */
+  .status-bar {
+    height: 38px;
+    background: var(--white);
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 0 24px 6px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+  }
+  .status-time {
+    font-family: 'Sora', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--navy);
+  }
+  .status-icons {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+  .status-icons span {
+    font-size: 10px;
+    color: var(--navy);
+    opacity: 0.7;
+  }
+
+  /* ─── HEADER ─── */
+  .topbar {
+    background: var(--white);
+    padding: 12px 20px 16px;
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .topbar-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .topbar-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: -0.3px;
+  }
+  .topbar-sub {
+    font-size: 12px;
+    color: var(--gray-400);
+    margin-top: 2px;
+  }
+  .icon-btn {
+    width: 36px; height: 36px;
+    border-radius: 12px;
+    background: var(--sky-pale);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .icon-btn svg { width: 18px; height: 18px; }
+
+  /* ─── SCROLL AREA ─── */
+  .scroll-area {
+    flex: 1;
+    overflow: hidden;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* ─── BOTTOM NAV ─── */
+  .bottom-nav {
+    height: 64px;
+    background: var(--white);
+    border-top: 1px solid var(--gray-100);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 8px;
+    flex-shrink: 0;
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+  }
+  .nav-icon {
+    width: 24px; height: 24px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .nav-icon.active { background: var(--sky-pale); }
+  .nav-icon svg { width: 16px; height: 16px; }
+  .nav-label {
+    font-size: 9px;
+    font-weight: 500;
+    color: var(--gray-400);
+    letter-spacing: 0.03em;
+  }
+  .nav-label.active { color: var(--sky); }
+
+  /* ─── FAB ─── */
+  .fab {
+    position: absolute;
+    bottom: 72px;
+    right: 16px;
+    width: 48px; height: 48px;
+    background: var(--navy);
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 16px rgba(10,35,66,0.35);
+    z-index: 50;
+  }
+  .fab svg { width: 20px; height: 20px; stroke: white; }
+
+  /* ─── MALETA CARD ─── */
+  .maleta-card {
+    background: var(--white);
+    border-radius: var(--radius-card);
+    padding: 16px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    border: 1px solid var(--gray-100);
+    position: relative;
+    overflow: hidden;
+  }
+  .maleta-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: var(--card-accent, var(--sky));
+    border-radius: 4px 0 0 4px;
+  }
+  .maleta-icon-wrap {
+    width: 48px; height: 48px;
+    border-radius: 14px;
+    background: var(--card-pale, var(--sky-pale));
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .maleta-icon-wrap svg { width: 26px; height: 26px; }
+  .maleta-info { flex: 1; min-width: 0; }
+  .maleta-name {
+    font-family: 'Sora', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--navy);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .maleta-type {
+    font-size: 11px;
+    color: var(--gray-400);
+    margin-top: 1px;
+  }
+  .maleta-stats {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .stat-pill {
+    font-size: 10px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 100px;
+    background: var(--gray-100);
+    color: var(--gray-600);
+  }
+  .stat-pill.green { background: #DCFCE7; color: #15803D; }
+  .stat-pill.amber { background: #FEF3C7; color: #92400E; }
+  .progress-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .progress-bar {
+    flex: 1;
+    height: 5px;
+    background: var(--gray-100);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--sky);
+    border-radius: 100px;
+  }
+  .progress-pct {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--gray-600);
+    flex-shrink: 0;
+  }
+
+  /* ─── SECTION LABEL ─── */
+  .section-label {
+    font-family: 'Sora', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--gray-400);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0 2px;
+  }
+
+  /* ─── ITEM ROW ─── */
+  .item-row {
+    background: var(--white);
+    border-radius: 14px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid var(--gray-100);
+  }
+  .item-check {
+    width: 22px; height: 22px;
+    border-radius: 8px;
+    border: 2px solid var(--gray-200);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .item-check.done { background: var(--sky); border-color: var(--sky); }
+  .item-check.used { background: var(--success); border-color: var(--success); }
+  .item-check svg { width: 12px; height: 12px; stroke: white; stroke-width: 2.5; }
+  .item-text { flex: 1; }
+  .item-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--navy);
+  }
+  .item-name.used-text { text-decoration: line-through; color: var(--gray-400); }
+  .item-qty {
+    font-size: 11px;
+    color: var(--gray-400);
+    margin-top: 1px;
+  }
+  .item-badge {
+    font-size: 9px;
+    font-weight: 600;
+    padding: 3px 7px;
+    border-radius: 100px;
+    letter-spacing: 0.05em;
+  }
+  .badge-pending { background: #FEF3C7; color: #92400E; }
+  .badge-packed { background: #DBEAFE; color: #1D4ED8; }
+  .badge-used { background: #DCFCE7; color: #15803D; }
+
+  /* ─── DETAIL HEADER ─── */
+  .detail-header {
+    background: var(--navy);
+    padding: 38px 20px 20px;
+    flex-shrink: 0;
+  }
+  .back-btn {
+    display: flex; align-items: center; gap: 6px;
+    color: var(--sky-light);
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 16px;
+  }
+  .back-btn svg { width: 14px; height: 14px; stroke: var(--sky-light); }
+  .detail-maleta-row {
+    display: flex; align-items: center; gap: 14px;
+  }
+  .detail-icon {
+    width: 52px; height: 52px;
+    border-radius: 16px;
+    background: rgba(91,155,213,0.2);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .detail-icon svg { width: 28px; height: 28px; stroke: var(--sky-light); }
+  .detail-maleta-name {
+    font-family: 'Sora', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: -0.2px;
+  }
+  .detail-maleta-type {
+    font-size: 11px;
+    color: var(--sky-light);
+    margin-top: 2px;
+    opacity: 0.8;
+  }
+  .detail-progress-row {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .detail-progress-bar {
+    flex: 1;
+    height: 6px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+  .detail-progress-fill {
+    height: 100%;
+    background: var(--sky);
+    border-radius: 100px;
+  }
+  .detail-progress-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--sky-light);
+  }
+
+  /* ─── FILTER TABS ─── */
+  .filter-tabs {
+    display: flex;
+    gap: 8px;
+    padding: 12px 16px;
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-100);
+    flex-shrink: 0;
+    overflow-x: hidden;
+  }
+  .tab {
+    padding: 5px 12px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gray-400);
+    background: var(--gray-100);
+    white-space: nowrap;
+  }
+  .tab.active {
+    background: var(--navy);
+    color: var(--white);
+  }
+
+  /* ─── PROFILE SCREEN ─── */
+  .profile-header {
+    background: var(--navy);
+    padding: 38px 20px 28px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .avatar-ring {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--sky), var(--sky-light));
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 0 3px rgba(91,155,213,0.3);
+  }
+  .avatar-initials {
+    font-family: 'Sora', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--white);
+  }
+  .profile-name {
+    font-family: 'Sora', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--white);
+    margin-top: 2px;
+  }
+  .profile-email {
+    font-size: 11px;
+    color: var(--sky-light);
+    opacity: 0.8;
+  }
+  .profile-stats-row {
+    display: flex;
+    gap: 0;
+    margin-top: 6px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 14px;
+    overflow: hidden;
+    width: 100%;
+  }
+  .profile-stat {
+    flex: 1;
+    text-align: center;
+    padding: 10px 0;
+    border-right: 1px solid rgba(255,255,255,0.1);
+  }
+  .profile-stat:last-child { border-right: none; }
+  .profile-stat-n {
+    font-family: 'Sora', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--white);
+  }
+  .profile-stat-l {
+    font-size: 9px;
+    color: var(--sky-light);
+    opacity: 0.7;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .menu-section {
+    padding: 14px 16px 4px;
+  }
+  .menu-section-title {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--gray-400);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    padding: 0 2px;
+  }
+  .menu-item {
+    background: var(--white);
+    border-radius: 14px;
+    padding: 13px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 6px;
+    border: 1px solid var(--gray-100);
+  }
+  .menu-item-icon {
+    width: 32px; height: 32px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .menu-item-icon svg { width: 16px; height: 16px; }
+  .menu-item-text {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--navy);
+  }
+  .menu-item-arrow {
+    color: var(--gray-400);
+    font-size: 16px;
+  }
+  .menu-item.danger .menu-item-text { color: #DC2626; }
+
+  /* ─── LOGIN SCREEN ─── */
+  .login-bg {
+    background: var(--navy);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+  }
+  .login-top {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    gap: 6px;
+  }
+  .login-logo {
+    width: 64px; height: 64px;
+    background: rgba(91,155,213,0.2);
+    border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 8px;
+  }
+  .login-logo svg { width: 34px; height: 34px; stroke: var(--sky); }
+  .login-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: -0.3px;
+  }
+  .login-sub {
+    font-size: 12px;
+    color: var(--sky-light);
+    opacity: 0.7;
+    text-align: center;
+    max-width: 200px;
+  }
+  .login-card {
+    background: var(--white);
+    border-radius: 28px 28px 0 0;
+    padding: 24px 20px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  .login-card-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 4px;
+  }
+  .input-field {
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 11px 14px;
+    font-size: 12px;
+    color: var(--navy);
+    background: var(--gray-50);
+  }
+  .input-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--gray-600);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .input-group { display: flex; flex-direction: column; gap: 0; }
+  .btn-primary {
+    background: var(--navy);
+    color: var(--white);
+    border-radius: 14px;
+    padding: 13px;
+    text-align: center;
+    font-family: 'Sora', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 4px;
+  }
+  .divider-row {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .divider-line { flex: 1; height: 1px; background: var(--gray-200); }
+  .divider-text { font-size: 10px; color: var(--gray-400); }
+  .social-btns { display: flex; gap: 8px; }
+  .social-btn {
+    flex: 1;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 9px;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+  }
+  .social-btn svg { width: 14px; height: 14px; }
+
+  /* ─── CHECKLIST SCREEN ─── */
+  .checklist-header {
+    background: var(--white);
+    padding: 12px 20px 14px;
+    border-bottom: 1px solid var(--gray-100);
+    flex-shrink: 0;
+  }
+  .checklist-summary {
+    background: var(--navy);
+    margin: 12px 16px 0;
+    border-radius: 16px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .checklist-summary-text {
+    flex: 1;
+  }
+  .checklist-summary-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--white);
+  }
+  .checklist-summary-sub {
+    font-size: 10px;
+    color: var(--sky-light);
+    opacity: 0.8;
+    margin-top: 2px;
+  }
+  .circle-progress {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: conic-gradient(var(--sky) 0% 62%, rgba(255,255,255,0.15) 62% 100%);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .circle-inner {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--navy);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Sora', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--white);
+  }
+</style>
+</head>
+<body>
+
+<p class="page-title">Referencia de diseño</p>
+<h2 class="brand">SuitcaseSmart</h2>
+
+<div class="screens-row">
+
+  <!-- ─── 1. LOGIN ─── -->
+  <div class="screen-wrap">
+    <span class="screen-label">01 · Login</span>
+    <div class="phone">
+      <div class="screen" style="background: var(--navy);">
+        <div class="status-bar" style="background: var(--navy);">
+          <span class="status-time" style="color:white; opacity:.7;">9:41</span>
+          <div class="status-icons">
+            <span style="color:white; opacity:.7;">●●●</span>
+          </div>
+        </div>
+        <div class="login-bg">
+          <div class="login-top">
+            <div class="login-logo">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="7" width="20" height="14" rx="3"/>
+                <path d="M8 7V5a4 4 0 018 0v2"/>
+                <circle cx="12" cy="14" r="2"/>
+              </svg>
+            </div>
+            <div class="login-title">SuitcaseSmart</div>
+            <div class="login-sub">Organiza tu maleta antes de salir</div>
+          </div>
+          <div class="login-card">
+            <div class="login-card-title">Bienvenido de nuevo</div>
+            <div class="input-group">
+              <div class="input-label">Correo</div>
+              <div class="input-field" style="color: var(--gray-400);">tu@correo.com</div>
+            </div>
+            <div class="input-group">
+              <div class="input-label">Contraseña</div>
+              <div class="input-field" style="color: var(--gray-400);">••••••••</div>
+            </div>
+            <div class="btn-primary">Iniciar sesión</div>
+            <div class="divider-row">
+              <div class="divider-line"></div>
+              <div class="divider-text">o continúa con</div>
+              <div class="divider-line"></div>
+            </div>
+            <div class="social-btns">
+              <div class="social-btn">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M20.3 12.2c0-.6-.1-1.3-.2-1.9H12v3.6h4.7c-.2 1-.8 1.9-1.7 2.5v2h2.8c1.6-1.5 2.5-3.7 2.5-6.2z" fill="#4285F4"/><path d="M12 21c2.4 0 4.4-.8 5.8-2.1l-2.8-2.2c-.8.5-1.8.8-3 .8-2.3 0-4.2-1.5-4.9-3.6H4.2v2.3C5.6 19.1 8.6 21 12 21z" fill="#34A853"/><path d="M7.1 13.9c-.2-.5-.3-1.1-.3-1.9s.1-1.3.3-1.9V7.8H4.2C3.4 9.3 3 11.1 3 12s.4 2.7 1.2 4.2l2.9-2.3z" fill="#FBBC05"/><path d="M12 6.3c1.3 0 2.4.4 3.3 1.3l2.5-2.5C16.4 3.7 14.4 3 12 3 8.6 3 5.6 4.9 4.2 7.8l2.9 2.3C7.8 7.8 9.7 6.3 12 6.3z" fill="#EA4335"/></svg>
+                Google
+              </div>
+              <div class="social-btn">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.7 9.05 7.4c1.27.07 2.16.74 2.9.8.9-.21 1.74-.93 2.9-.91 1.32.03 2.32.74 2.98 1.87-2.64 1.62-2.22 5.5.75 6.57-.55 1.55-1.3 3.08-1.53 4.55zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+                Apple
+              </div>
+            </div>
+            <div style="text-align:center; font-size:11px; color:var(--gray-400); margin-top:2px;">
+              ¿No tienes cuenta? <span style="color:var(--sky); font-weight:600;">Regístrate</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── 2. MIS MALETAS ─── -->
+  <div class="screen-wrap">
+    <span class="screen-label">02 · Mis Maletas</span>
+    <div class="phone">
+      <div class="screen">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><span>●●●</span></div>
+        </div>
+        <div class="topbar">
+          <div class="topbar-row">
+            <div>
+              <div class="topbar-title">Mis Maletas</div>
+              <div class="topbar-sub">3 maletas · viaje activo</div>
+            </div>
+            <div class="icon-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--sky)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="scroll-area" style="padding-top:12px;">
+          <!-- Card 1 -->
+          <div class="maleta-card" style="--card-accent:#5B9BD5; --card-pale:#EBF4FC;">
+            <div class="maleta-icon-wrap" style="background:#EBF4FC;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#5B9BD5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="3"/><path d="M8 7V5a4 4 0 018 0v2"/><circle cx="12" cy="14" r="2"/></svg>
+            </div>
+            <div class="maleta-info">
+              <div class="maleta-name">Maleta Principal</div>
+              <div class="maleta-type">Maleta grande · 24kg</div>
+              <div class="maleta-stats">
+                <div class="stat-pill green">12 empacados</div>
+                <div class="stat-pill">3 pendientes</div>
+              </div>
+              <div class="progress-row">
+                <div class="progress-bar"><div class="progress-fill" style="width:80%;"></div></div>
+                <div class="progress-pct">80%</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="maleta-card" style="--card-accent:#8B5CF6; --card-pale:#F5F3FF;">
+            <div class="maleta-icon-wrap" style="background:#F5F3FF;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V8a2 2 0 012-2h12a2 2 0 012 2v12"/><path d="M2 20h20"/><path d="M9 20V12h6v8"/></svg>
+            </div>
+            <div class="maleta-info">
+              <div class="maleta-name">Carry-on</div>
+              <div class="maleta-type">Equipaje de mano · 7kg</div>
+              <div class="maleta-stats">
+                <div class="stat-pill green">5 empacados</div>
+                <div class="stat-pill amber">2 usados</div>
+              </div>
+              <div class="progress-row">
+                <div class="progress-bar"><div class="progress-fill" style="width:60%; background:#8B5CF6;"></div></div>
+                <div class="progress-pct">60%</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="maleta-card" style="--card-accent:#F59E0B; --card-pale:#FFFBEB;">
+            <div class="maleta-icon-wrap" style="background:#FFFBEB;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21H8a2 2 0 01-2-2V5a2 2 0 012-2h5l5 5v11a2 2 0 01-2 2z"/><polyline points="13 3 13 8 18 8"/></svg>
+            </div>
+            <div class="maleta-info">
+              <div class="maleta-name">Mochila</div>
+              <div class="maleta-type">Mochila · artículos personales</div>
+              <div class="maleta-stats">
+                <div class="stat-pill">6 items</div>
+                <div class="stat-pill">Sin empacar</div>
+              </div>
+              <div class="progress-row">
+                <div class="progress-bar"><div class="progress-fill" style="width:0%; background:#F59E0B;"></div></div>
+                <div class="progress-pct">0%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FAB -->
+        <div class="fab">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+
+        <!-- Bottom Nav -->
+        <div class="bottom-nav">
+          <div class="nav-item">
+            <div class="nav-icon active">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--sky)" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="3"/><path d="M8 7V5a4 4 0 018 0v2"/></svg>
+            </div>
+            <span class="nav-label active">Maletas</span>
+          </div>
+          <div class="nav-item">
+            <div class="nav-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--gray-400)" stroke-width="2" stroke-linecap="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            </div>
+            <span class="nav-label">Checklist</span>
+          </div>
+          <div class="nav-item">
+            <div class="nav-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--gray-400)" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <span class="nav-label">Perfil</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── 3. DETALLE MALETA ─── -->
+  <div class="screen-wrap">
+    <span class="screen-label">03 · Detalle Maleta</span>
+    <div class="phone">
+      <div class="screen">
+        <div class="status-bar" style="background: var(--navy);">
+          <span class="status-time" style="color:white; opacity:.7;">9:41</span>
+          <div class="status-icons"><span style="color:white; opacity:.7;">●●●</span></div>
+        </div>
+        <div class="detail-header">
+          <div class="back-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+            Mis Maletas
+          </div>
+          <div class="detail-maleta-row">
+            <div class="detail-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="3"/><path d="M8 7V5a4 4 0 018 0v2"/><circle cx="12" cy="14" r="2"/></svg>
+            </div>
+            <div>
+              <div class="detail-maleta-name">Maleta Principal</div>
+              <div class="detail-maleta-type">Maleta grande · 15 items</div>
+            </div>
+          </div>
+          <div class="detail-progress-row">
+            <div class="detail-progress-bar"><div class="detail-progress-fill" style="width:80%;"></div></div>
+            <div class="detail-progress-label">12/15</div>
+          </div>
+        </div>
+
+        <div class="filter-tabs">
+          <div class="tab active">Todos</div>
+          <div class="tab">Por empacar</div>
+          <div class="tab">Empacado</div>
+          <div class="tab">Usado</div>
+        </div>
+
+        <div class="scroll-area" style="gap: 8px;">
+          <div class="section-label">Ropa</div>
+
+          <div class="item-row">
+            <div class="item-check done">
+              <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="item-text">
+              <div class="item-name">Camisas</div>
+              <div class="item-qty">3 unidades</div>
+            </div>
+            <div class="item-badge badge-packed">Empacado</div>
+          </div>
+
+          <div class="item-row">
+            <div class="item-check">
+            </div>
+            <div class="item-text">
+              <div class="item-name">Pantalones</div>
+              <div class="item-qty">2 unidades</div>
+            </div>
+            <div class="item-badge badge-pending">Pendiente</div>
+          </div>
+
+          <div class="item-row">
+            <div class="item-check used">
+              <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="item-text">
+              <div class="item-name used-text">Ropa interior</div>
+              <div class="item-qty">5 unidades</div>
+            </div>
+            <div class="item-badge badge-used">Usado</div>
+          </div>
+
+          <div class="section-label" style="margin-top:4px;">Electrónica</div>
+
+          <div class="item-row">
+            <div class="item-check done">
+              <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="item-text">
+              <div class="item-name">Cargadores</div>
+              <div class="item-qty">2 unidades</div>
+            </div>
+            <div class="item-badge badge-packed">Empacado</div>
+          </div>
+
+          <div class="item-row">
+            <div class="item-check">
+            </div>
+            <div class="item-text">
+              <div class="item-name">Audífonos</div>
+              <div class="item-qty">1 unidad</div>
+            </div>
+            <div class="item-badge badge-pending">Pendiente</div>
+          </div>
+        </div>
+
+        <!-- FAB -->
+        <div class="fab">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item">
+            <div class="nav-icon active">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--sky)" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="3"/><path d="M8 7V5a4 4 0 018 0v2"/></svg>
+            </div>
+            <span class="nav-label active">Maletas</span>
+          </div>
+          <div class="nav-item">
+            <div class="nav-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--gray-400)" stroke-width="2" stroke-linecap="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            </div>
+            <span class="nav-label">Checklist</span>
+          </div>
+          <div class="nav-item">
+            <div class="nav-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--gray-400)" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <span class="nav-label">Perfil</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── 4. CHECKLIST ─── -->
+  <div class="screen-wrap">
+    <span class="screen-label">04 · Checklist</span>
+    <div class="phone">
+      <div class="screen">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons"><span>●●●</span></div>
+        </div>
+        <div class="topbar">
+          <div class="topbar-row">
+            <div>
+              <div class="topbar-title">Checklist</div>
+              <div class="topbar-sub">5 items pendientes</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="checklist-summary">
+          <div class="checklist-summary-text">
+            <div class="checklist-summary-title">Progreso total</div>
+            <div class="checklist-summary-sub">17 de 27 items empacados</div>
+          </div>
+          <div class="circle-progress">
+            <div class="circle-inner">63%</div>
+          </div>
+        </div>
+
+        <div class="scroll-area" style="padding-top:14px; gap:8px;">
+          <div class="section-label">Maleta Principal</div>
+          <div class="item-row">
+            <div class="item-check"></div>
+            <div class="item-text">
+              <div class="item-name">Pantalones</div>
+              <div class="item-qty">2 unidades</div>
+            </div>
+            <div class="item-badge badge-pending">Pendiente</div>
+          </div>
+          <div class="item-row">
+            <div class="item-check"></div>
+            <div class="item-text">
+              <div class="item-name">Audífonos</div>
+              <div class="item-qty">1 unidad</div>
+            </div>
+            <div class="item-badge badge-pending">Pendiente</div>
+          </div>
+
+          <div class="section-label" style="margin-top:4px;">Mochila</div>
+          <div class="item-row">
+            <div class="item-check"></div>
+            <div class="item-text">
+              <div class="item-name">Pasaporte</div>
+              <div class="item-qty">1 unidad</div>
+            </div>
+            <div class="item-badge badge-pending">Pendiente</div>
+          </div>
+          <div class="item-row">
+            <div class="item-check"></div>
+            <div class="item-text">
+              <div class="item-name">Bloqueador solar</div>
+              <div class="item-qty">1 frasco</div>
+            </div>
+            <div class="item-badge badge-pending">Pendiente</div>
+          </div>
+          <div class="item-row">
+            <div class="item-check"></div>
+            <div class="item-text">
+              <div class="item-name">Libro de viaje</div>
+              <div class="item-qty">1 unidad</div>
+            </div>
+            <div class="item-badge badge-pending">Pendiente</div>
+          </div>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item">
+            <div class="nav-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--gray-400)" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="3"/><path d="M8 7V5a4 4 0 018 0v2"/></svg>
+            </div>
+            <span class="nav-label">Maletas</span>
+          </div>
+          <div class="nav-item">
+            <div class="nav-icon active">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--sky)" stroke-width="2" stroke-linecap="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            </div>
+            <span class="nav-label active">Checklist</span>
+          </div>
+          <div class="nav-item">
+            <div class="nav-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--gray-400)" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <span class="nav-label">Perfil</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── 5. PERFIL ─── -->
+  <div class="screen-wrap">
+    <span class="screen-label">05 · Perfil</span>
+    <div class="phone">
+      <div class="screen">
+        <div class="status-bar" style="background: var(--navy);">
+          <span class="status-time" style="color:white; opacity:.7;">9:41</span>
+          <div class="status-icons"><span style="color:white; opacity:.7;">●●●</span></div>
+        </div>
+        <div class="profile-header">
+          <div class="avatar-ring">
+            <div class="avatar-initials">AL</div>
+          </div>
+          <div class="profile-name">Alejandro López</div>
+          <div class="profile-email">alejandro@lopeztech.dev</div>
+          <div class="profile-stats-row">
+            <div class="profile-stat">
+              <div class="profile-stat-n">3</div>
+              <div class="profile-stat-l">Maletas</div>
+            </div>
+            <div class="profile-stat">
+              <div class="profile-stat-n">27</div>
+              <div class="profile-stat-l">Items</div>
+            </div>
+            <div class="profile-stat">
+              <div class="profile-stat-n">63%</div>
+              <div class="profile-stat-l">Listo</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="scroll-area" style="padding: 0; gap: 0; overflow-y: hidden;">
+          <div class="menu-section">
+            <div class="menu-section-title">Cuenta</div>
+            <div class="menu-item">
+              <div class="menu-item-icon" style="background: var(--sky-pale);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--sky)" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <div class="menu-item-text">Editar perfil</div>
+              <div class="menu-item-arrow">›</div>
+            </div>
+            <div class="menu-item">
+              <div class="menu-item-icon" style="background: #F5F3FF;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+              </div>
+              <div class="menu-item-text">Cambiar contraseña</div>
+              <div class="menu-item-arrow">›</div>
+            </div>
+          </div>
+
+          <div class="menu-section">
+            <div class="menu-section-title">Preferencias</div>
+            <div class="menu-item">
+              <div class="menu-item-icon" style="background: #FFF7ED;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+              </div>
+              <div class="menu-item-text">Tema</div>
+              <div class="menu-item-arrow">›</div>
+            </div>
+            <div class="menu-item">
+              <div class="menu-item-icon" style="background: #ECFDF5;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+              </div>
+              <div class="menu-item-text">Notificaciones</div>
+              <div class="menu-item-arrow">›</div>
+            </div>
+          </div>
+
+          <div class="menu-section">
+            <div class="menu-section-title">Sesión</div>
+            <div class="menu-item danger">
+              <div class="menu-item-icon" style="background: #FEF2F2;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              </div>
+              <div class="menu-item-text">Cerrar sesión</div>
+              <div class="menu-item-arrow" style="color:#DC2626;">›</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item">
+            <div class="nav-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--gray-400)" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="3"/><path d="M8 7V5a4 4 0 018 0v2"/></svg>
+            </div>
+            <span class="nav-label">Maletas</span>
+          </div>
+          <div class="nav-item">
+            <div class="nav-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--gray-400)" stroke-width="2" stroke-linecap="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            </div>
+            <span class="nav-label">Checklist</span>
+          </div>
+          <div class="nav-item">
+            <div class="nav-icon active">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--sky)" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <span class="nav-label active">Perfil</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
