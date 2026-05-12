@@ -1,5 +1,5 @@
 # SuitcaseSmart — Sync Android → iOS
-**Última actualización:** Febrero 2026
+**Última actualización:** Marzo 2026
 
 Este documento describe el estado actual de Android para que iOS vaya a la par.
 
@@ -17,18 +17,23 @@ Este documento describe el estado actual de Android para que iOS vaya a la par.
 | Agregar Maleta (bottom sheet) | ✅ | ✅ |
 | Detalle de Maleta — lista items | ✅ | ✅ |
 | Agregar Item (bottom sheet) | ✅ | ✅ |
-| Cambiar estado de item (tap chip) | ✅ | ✅ |
-| Perfil (nombre, email, sign out) | ✅ | ✅ |
+| Cambiar estado de item (tap checkbox) | ✅ | ✅ |
+| Perfil (nombre, email, stats, sign out) | ✅ | ✅ |
 | Barra de progreso en detalle de maleta | ✅ | ✅ |
+| Back button en detalle | ✅ | ✅ |
 | Eliminar maleta (swipe + confirmación) | ✅ | ❌ pendiente |
 | Eliminar item (swipe + confirmación) | ✅ | ❌ pendiente |
 | Editar maleta (long press → sheet) | ✅ | ❌ pendiente |
 | Editar item (long press → sheet) | ✅ | ❌ pendiente |
-| Barra de progreso en maleta card (Home) | ✅ | ❌ pendiente |
-| Checklist (filtro "por empacar") | ✅ | ❌ pendiente |
-| Back button en detalle | ✅ | ✅ |
+| Barra de progreso + pills en maleta card (Home) | ✅ | ❌ pendiente |
+| Checklist (tab en bottom nav, items por maleta) | ✅ | ❌ pendiente |
+| Filtros por estado en Detalle (tabs: Todos / Por empacar / Empacado / Usado) | ✅ | ❌ pendiente |
+| Items agrupados por categoría en Detalle | ✅ | ❌ pendiente |
+| Stats en Perfil (maletas · items · % listo) | ✅ | ❌ pendiente |
+| Toggle modo oscuro (persistido) | ✅ | ❌ pendiente |
+| Tipografía custom (Sora + DM Sans) | ✅ | ❌ pendiente |
 
-**Android MVP: completo. Pendiente en iOS: 6 features.**
+**Android MVP: completo. Pendiente en iOS: 12 features.**
 
 ---
 
@@ -73,46 +78,86 @@ users/{userId}/maletas/{maletaId}/items/{itemId}
 | Morado | `#8E44AD` |
 | Gris | `#7F8C8D` |
 
-### Estados de un item
-| Raw value | Label visible | Color |
+### Paleta de marca (usar los mismos tokens)
+| Token | Hex | Uso |
 |---|---|---|
-| `por_empacar` | "Por empacar" | Naranja `#E67E22` |
-| `empacado` | "Empacado" | Verde `#27AE60` |
-| `usado` | "Usado" | Gris `#7F8C8D` |
+| `AviationNavy` | `#0A2342` | Primary (botones, headers, FAB) en light mode |
+| `AviationNavyLight` | `#5B9BD5` | Primary en dark mode, checkboxes empacados |
+| `SkyBlue` | `#5B9BD5` | Alias de AviationNavyLight |
+| `SkyLight` | `#B3D1EE` | Textos secundarios sobre fondos navy |
+| `GreenPacked` | `#27AE60` | Checkbox "usado" |
+| `GreenPackedBg` | `#E8F8F0` | Fondo pill "empacado" |
+| `AmberPendingBg` | `#FEF3E7` | Fondo pill "pendiente" |
 
-Ciclo al tocar el chip: `por_empacar` → `empacado` → `usado` → `por_empacar`
+### Estados de un item
+| Raw value | Label visible | Color texto | Color fondo pill |
+|---|---|---|---|
+| `por_empacar` | "Pendiente" | `#E67E22` | `#FEF3E7` |
+| `empacado` | "Empacado" | `AviationNavyLight` | `AviationNavyLight` 12% |
+| `usado` | "Usado" | `#27AE60` | `#E8F8F0` |
+
+Ciclo al tocar el checkbox: `por_empacar` → `empacado` → `usado` → `por_empacar`
+
+### Tipografía
+| Uso | Familia | Pesos |
+|---|---|---|
+| Títulos / headings | Sora | Light, Regular, Medium, SemiBold, Bold |
+| Cuerpo / labels | DM Sans | Regular, Medium |
 
 ---
 
 ## UX de features implementadas en Android (referencia para iOS)
 
-### Cambio de estado
-Chip/pill tappable a la derecha del item. Fondo semitransparente + borde sólido del color del estado. Un tap cicla al siguiente estado. **Update optimista** — cambio instantáneo en UI, Firestore en background.
+### Cambio de estado (checkbox)
+Checkbox cuadrado (esquinas 8pt) a la izquierda del item. Vacío cuando `por_empacar`, relleno `AviationNavyLight` cuando `empacado`, relleno `GreenPacked` cuando `usado`. Un tap cicla al siguiente estado. **Update optimista** — cambio instantáneo en UI, Firestore en background.
 
-### Barra de progreso
-- **En detalle de maleta:** LinearProgressIndicator encima de la lista. Cuenta `empacado` + `usado` como "empacados". Muestra "X de Y empacados".
-- **En card de Home:** barra delgada debajo del tipo de maleta. Mismo conteo. Los counts se cargan con N queries al entrar en Home (uno por maleta).
+### Badge de estado
+Pill a la derecha del item con el label del estado y fondo semitransparente según la tabla de colores arriba.
+
+### Barra de progreso en Detalle de Maleta
+`LinearProgressIndicator` en el header navy (no dentro del contenido). Cuenta `empacado` + `usado` como "empacados". Muestra "X/Y" a la derecha.
+
+### Barra de progreso en card de Home (MaletaRow)
+- Barra lateral de acento (4dp) con el color de la maleta.
+- Pills de conteo debajo del tipo: "N pendientes" (amber) y "N empacados" (verde).
+- `LinearProgressIndicator` delgada (5dp) al fondo del card, coloreada con el color de la maleta.
+- Los counts llegan via listeners en tiempo real de Firestore (uno por maleta).
+
+### Filtros por estado en Detalle
+`LazyRow` de chips justo debajo del header. Opciones: **Todos / Por empacar / Empacado / Usado**. Chip activo fondo `AviationNavy` texto blanco; inactivo fondo `surfaceVariant`.
+
+### Items agrupados por categoría
+Dentro de la lista de ítems del detalle, se agrupan por `categoria`. Encima de cada grupo va un label con el nombre de la categoría en uppercase, `labelSmall`, `onSurfaceVariant`.
+
+### Stats en Perfil
+Fila de 3 columnas dentro del header navy:
+- **Maletas**: total de maletas del usuario
+- **Items**: total de items en todas las maletas
+- **Listo**: porcentaje empacado/total (ej: "72%")
+
+### Toggle modo oscuro
+`Switch` en la pantalla de Perfil, sección "Preferencias". Persiste en `SharedPreferences` / `UserDefaults`. Sobreescribe la preferencia del sistema.
 
 ### Eliminar maleta / item
-- **Gesto:** swipe de derecha a izquierda. Fondo rojo (`#E74C3C`) con ícono de basurero.
-- **Confirmación:** `AlertDialog` con botón "Eliminar" en rojo y "Cancelar". El swipe rebota de vuelta (no elimina directamente).
-- **Ejecución:** update optimista (desaparece de la lista inmediatamente), Firestore en background.
+- **Gesto:** swipe de derecha a izquierda. Fondo rojo con ícono de basurero.
+- **Confirmación:** `AlertDialog` con botón "Eliminar" en rojo y "Cancelar". El swipe rebota (no elimina directamente).
+- **Ejecución:** desaparece de la lista, Firestore en background. Al eliminar una maleta, se borran también sus items (batch delete).
 
 ### Editar maleta
-- **Gesto:** long press en la card de la maleta.
-- **UX:** abre el mismo bottom sheet de "Agregar Maleta" pre-relleno con los datos actuales. El título cambia a "Editar Maleta".
-- **Ejecución:** update optimista en la lista, Firestore en background.
+- **Gesto:** long press en la card.
+- **UX:** abre el mismo bottom sheet de "Agregar Maleta" pre-relleno. Título "Editar Maleta".
 
 ### Editar item
-- **Gesto:** long press en cualquier parte del card del item (el chip sigue funcionando con tap normal).
-- **UX:** abre el mismo bottom sheet de "Agregar Item" pre-relleno. Título cambia a "Editar Item". Se preservan `estado` y `notas` — solo se actualizan `nombre`, `categoria`, `cantidad`.
-- **Ejecución:** update optimista, Firestore en background.
+- **Gesto:** long press en el card del item.
+- **UX:** abre el mismo bottom sheet de "Agregar Item" pre-relleno. Título "Editar Item". Se preservan `estado` y `notas` — solo se actualizan `nombre`, `categoria`, `cantidad`.
 
-### Checklist
-- **Acceso:** botón `FilterList` en la TopAppBar del detalle.
-- **Activo:** ícono naranja, título cambia a "Por empacar", lista filtrada solo con items `por_empacar`.
-- **Header en modo checklist:** "X items por empacar" (naranja) o "¡Todo empacado!" (verde) si la lista está vacía.
-- **Inactivo:** vuelve a vista normal con barra de progreso.
+### Checklist (tab en bottom nav)
+Tab independiente en la barra de navegación inferior (entre Maletas y Perfil).
+- **Contenido:** todos los items con estado `por_empacar` de todas las maletas del usuario.
+- **Agrupación:** por maleta (nombre de maleta en uppercase como sección header).
+- **Card de resumen:** fijo en la parte superior — fondo `AviationNavy`, muestra "X de Y items empacados" + círculo de progreso con porcentaje.
+- **Estado vacío:** pantalla centrada con "✓" y "¡Todo empacado!".
+- **Tap en checkbox:** cicla el estado del item (mismo comportamiento que en Detalle); si pasa a `empacado` o `usado`, desaparece del Checklist en tiempo real.
 
 ---
 
@@ -123,5 +168,6 @@ Chip/pill tappable a la derecha del item. Fondo semitransparente + borde sólido
 - Historial de viajes
 - Fotos de items
 - Peso estimado
-- Notificaciones
+- Notificaciones push
 - Concepto de Viaje como agrupador
+- Editar perfil / cambiar contraseña

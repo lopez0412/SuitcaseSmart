@@ -79,7 +79,7 @@ fun ProfileScreen(
         }
     }
 
-    Scaffold { padding ->
+    Scaffold(contentWindowInsets = WindowInsets(0)) { _ ->
         Column(
             modifier = Modifier
                 .fillMaxSize()

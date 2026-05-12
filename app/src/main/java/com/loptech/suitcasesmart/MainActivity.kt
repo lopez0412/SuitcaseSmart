@@ -82,15 +82,16 @@ class MainActivity : ComponentActivity() {
         firebaseConfig.setDefaultsAsync(mapOf("show_error_btn" to false))
 
         setContent {
+            val preferencesManager = remember { PreferencesManager(this) }
+            val isDarkTheme = remember { mutableStateOf(preferencesManager.getData("isDarkTheme", false)) }
+
             SuitcaseSmartTheme(darkTheme = isDarkTheme.value) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    val preferencesManager = remember { PreferencesManager(this) }
                     val data = remember { mutableStateOf(preferencesManager.getData("isOnboarding", false)) }
-                    val isDarkTheme = remember { mutableStateOf(preferencesManager.getData("isDarkTheme", false)) }
                     val startDestination = if (data.value) AppScreens.LoginScreen.route else AppScreens.OnboardingScreen.route
 
                     val toggleTheme: () -> Unit = {
