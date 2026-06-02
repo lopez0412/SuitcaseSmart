@@ -35,7 +35,7 @@ import com.loptech.suitcasesmart.model.domain.Item
 fun AddItemSheetForm(
     initialItem: Item? = null,
     onSave: (Item) -> Unit,
-    onDissmiss: () -> Unit
+    onDismiss: () -> Unit
 ) {
     val isEditing = initialItem != null
     var nombre by remember { mutableStateOf(initialItem?.nombre ?: "") }
@@ -139,7 +139,7 @@ fun AddItemSheetForm(
                 Text("Guardar")
             }
             OutlinedButton(
-                onClick = { onDissmiss() },
+                onClick = { onDismiss() },
                 modifier = Modifier.padding(start = 8.dp)
             ) {
                 Text("Cancelar")

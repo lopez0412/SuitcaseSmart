@@ -5,6 +5,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Luggage
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -133,6 +136,28 @@ fun HomeScreen(
                     strokeWidth = 6.dp
                 )
             }
+        } else if (maletas.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Icon(
+                        imageVector = Icons.Filled.Luggage,
+                        contentDescription = null,
+                        modifier = Modifier.size(64.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.35f)
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "¡Agrega tu primera maleta!",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                    )
+                }
+            }
         } else {
             LazyColumn(
                 modifier = Modifier
@@ -186,48 +211,49 @@ fun HomeScreen(
                 }
             }
 
-            if (showSheet) {
-                ModalBottomSheet(
-                    onDismissRequest = {
+        }
+
+        if (showSheet) {
+            ModalBottomSheet(
+                onDismissRequest = {
+                    scope.launch { sheetState.hide() }.invokeOnCompletion {
+                        showSheet = false
+                        maletaToEdit = null
+                    }
+                },
+                sheetState = sheetState,
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.onSurface,
+                shape = MaterialTheme.shapes.large,
+                tonalElevation = 8.dp
+            ) {
+                val editingMaleta = maletaToEdit
+                AddMaletaSheetForm(
+                    initialMaleta = editingMaleta,
+                    onSave = { maleta ->
+                        if (editingMaleta != null && editingMaleta.id.isNotEmpty()) {
+                            viewmodel.updateMaleta(userData.userId.toString(), editingMaleta.id, maleta, {
+                                scope.launch { sheetState.hide() }.invokeOnCompletion { showSheet = false; maletaToEdit = null }
+                                scope.launch { snackbarHostState.showSnackbar("Maleta actualizada") }
+                            }, {
+                                scope.launch { sheetState.hide() }.invokeOnCompletion { showSheet = false; maletaToEdit = null }
+                            })
+                        } else {
+                            viewmodel.addMaleta(userData.userId.toString(), maleta, {
+                                scope.launch { sheetState.hide() }.invokeOnCompletion { showSheet = false }
+                                scope.launch { snackbarHostState.showSnackbar("Maleta agregada exitosamente") }
+                            }, {
+                                scope.launch { sheetState.hide() }.invokeOnCompletion { showSheet = false }
+                            })
+                        }
+                    },
+                    onDismiss = {
                         scope.launch { sheetState.hide() }.invokeOnCompletion {
                             showSheet = false
                             maletaToEdit = null
                         }
-                    },
-                    sheetState = sheetState,
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    contentColor = MaterialTheme.colorScheme.onSurface,
-                    shape = MaterialTheme.shapes.large,
-                    tonalElevation = 8.dp
-                ) {
-                    val editingMaleta = maletaToEdit
-                    AddMaletaSheetForm(
-                        initialMaleta = editingMaleta,
-                        onSave = { maleta ->
-                            if (editingMaleta != null && editingMaleta.id.isNotEmpty()) {
-                                viewmodel.updateMaleta(userData.userId.toString(), editingMaleta.id, maleta, {
-                                    scope.launch { sheetState.hide() }.invokeOnCompletion { showSheet = false; maletaToEdit = null }
-                                    scope.launch { snackbarHostState.showSnackbar("Maleta actualizada") }
-                                }, {
-                                    scope.launch { sheetState.hide() }.invokeOnCompletion { showSheet = false; maletaToEdit = null }
-                                })
-                            } else {
-                                viewmodel.addMaleta(userData.userId.toString(), maleta, {
-                                    scope.launch { sheetState.hide() }.invokeOnCompletion { showSheet = false }
-                                    scope.launch { snackbarHostState.showSnackbar("Maleta agregada exitosamente") }
-                                }, {
-                                    scope.launch { sheetState.hide() }.invokeOnCompletion { showSheet = false }
-                                })
-                            }
-                        },
-                        onDissmiss = {
-                            scope.launch { sheetState.hide() }.invokeOnCompletion {
-                                showSheet = false
-                                maletaToEdit = null
-                            }
-                        }
-                    )
-                }
+                    }
+                )
             }
         }
 

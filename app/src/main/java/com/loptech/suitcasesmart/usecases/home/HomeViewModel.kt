@@ -53,11 +53,17 @@ class HomeViewModel : ViewModel() {
             _status.update { it.copy(displayProgressBar = true) }
         }
         maletasListener?.remove()
-        maletasListener = firebaseDatabase.listenMaletas(userId) { list ->
-            _maletas.value = list
-            _status.update { it.copy(displayProgressBar = false) }
-            listenItemCounts(userId, list)
-        }
+        maletasListener = firebaseDatabase.listenMaletas(
+            userId = userId,
+            onUpdate = { list ->
+                _maletas.value = list
+                _status.update { it.copy(displayProgressBar = false) }
+                listenItemCounts(userId, list)
+            },
+            onError = {
+                _status.update { it.copy(displayProgressBar = false, travelError = R.string.error_al_crear_viaje) }
+            }
+        )
     }
 
     private fun listenItemCounts(userId: String, maletas: List<Maleta>) {
@@ -72,12 +78,16 @@ class HomeViewModel : ViewModel() {
 
         // Add listeners for new maletas (skip those already subscribed)
         maletas.filter { it.id.isNotEmpty() && it.id !in itemListeners }.forEach { maleta ->
-            itemListeners[maleta.id] = firebaseDatabase.listenItems(userId, maleta.id) { items ->
-                val total = items.size
-                val empacados = items.count { it.estado == "empacado" || it.estado == "usado" }
-                _progreso.update { it + (maleta.id to Pair(empacados, total)) }
-                _allItems.update { it + (maleta.id to items) }
-            }
+            itemListeners[maleta.id] = firebaseDatabase.listenItems(
+                userId = userId,
+                maletaId = maleta.id,
+                onUpdate = { items ->
+                    val total = items.size
+                    val empacados = items.count { it.estado == "empacado" || it.estado == "usado" }
+                    _progreso.update { it + (maleta.id to Pair(empacados, total)) }
+                    _allItems.update { it + (maleta.id to items) }
+                }
+            )
         }
     }
 
@@ -122,7 +132,9 @@ class HomeViewModel : ViewModel() {
         _progreso.update { it - maletaId }
         _allItems.update { it - maletaId }
         itemListeners.remove(maletaId)?.remove()
-        firebaseDatabase.deleteAllItemsAndMaleta(userId, maletaId)
+        firebaseDatabase.deleteAllItemsAndMaleta(userId, maletaId,
+            onError = { _status.update { it.copy(travelError = R.string.error_al_crear_viaje) } }
+        )
     }
 
     fun hideErrorDialog() {

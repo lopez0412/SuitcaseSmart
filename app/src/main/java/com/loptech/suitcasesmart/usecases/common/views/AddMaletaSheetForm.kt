@@ -52,7 +52,7 @@ import com.loptech.suitcasesmart.usecases.common.maletaVisualForTipo
 fun AddMaletaSheetForm(
     initialMaleta: Maleta? = null,
     onSave: (Maleta) -> Unit,
-    onDissmiss: () -> Unit
+    onDismiss: () -> Unit
 ) {
     val isEditing = initialMaleta != null
     var nombre by remember { mutableStateOf(initialMaleta?.nombre ?: "") }
@@ -229,7 +229,7 @@ fun AddMaletaSheetForm(
                 Text("Guardar")
             }
             OutlinedButton(
-                onClick = { onDissmiss() },
+                onClick = { onDismiss() },
                 modifier = Modifier.padding(start = 8.dp)
             ) {
                 Text("Cancelar")

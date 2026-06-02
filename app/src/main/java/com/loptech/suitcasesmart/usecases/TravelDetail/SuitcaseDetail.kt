@@ -364,7 +364,7 @@ fun SuitcaseDetail(
                                 })
                             }
                         },
-                        onDissmiss = {
+                        onDismiss = {
                             scope.launch { sheetState.hide() }.invokeOnCompletion {
                                 showSheet = false
                                 itemToEdit = null

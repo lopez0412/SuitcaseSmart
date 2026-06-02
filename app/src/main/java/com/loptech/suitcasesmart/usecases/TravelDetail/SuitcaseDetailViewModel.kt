@@ -5,6 +5,7 @@ import com.google.firebase.firestore.ListenerRegistration
 import com.loptech.suitcasesmart.firebase.FirestoreDatabase
 import com.loptech.suitcasesmart.model.domain.Item
 import com.loptech.suitcasesmart.model.domain.Maleta
+import com.loptech.suitcasesmart.R
 import com.loptech.suitcasesmart.model.domain.StatusDatosMaletas
 import com.loptech.suitcasesmart.usecases.common.nextEstado
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,9 +40,12 @@ class TravelDetailViewModel : ViewModel() {
     fun getMaleta(userId: String, maletaId: String) {
         maletaListener?.remove()
         maletaListener = firebaseDatabase.getMaletaById(userId, maletaId)
-            .addSnapshotListener { snapshot, _ ->
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    _status.update { it.copy(travelError = R.string.error_al_crear_viaje) }
+                    return@addSnapshotListener
+                }
                 if (snapshot != null && snapshot.exists()) {
-                    // @DocumentId populates id automatically
                     snapshot.toObject(Maleta::class.java)?.let { _maleta.value = it }
                 }
             }
@@ -49,9 +53,12 @@ class TravelDetailViewModel : ViewModel() {
 
     fun getItems(userId: String, maletaId: String) {
         itemsListener?.remove()
-        itemsListener = firebaseDatabase.listenItems(userId, maletaId) { list ->
-            _items.value = list
-        }
+        itemsListener = firebaseDatabase.listenItems(
+            userId = userId,
+            maletaId = maletaId,
+            onUpdate = { list -> _items.value = list },
+            onError = { _status.update { it.copy(travelError = R.string.error_al_crear_viaje) } }
+        )
     }
 
     fun addItem(userId: String, maletaId: String, item: Item, onSuccess: () -> Unit, onError: () -> Unit) {

@@ -17,15 +17,26 @@ class FirestoreDatabase {
     private fun maletaItems(userId: String, maletaId: String): CollectionReference =
         userMaletas(userId).document(maletaId).collection("items")
 
-    fun listenMaletas(userId: String, onUpdate: (List<Maleta>) -> Unit): ListenerRegistration {
-        return userMaletas(userId).addSnapshotListener { snapshot, _ ->
+    fun listenMaletas(
+        userId: String,
+        onUpdate: (List<Maleta>) -> Unit,
+        onError: (Exception) -> Unit = {}
+    ): ListenerRegistration {
+        return userMaletas(userId).addSnapshotListener { snapshot, error ->
+            if (error != null) { onError(error); return@addSnapshotListener }
             if (snapshot == null) return@addSnapshotListener
             onUpdate(snapshot.documents.mapNotNull { it.toObject(Maleta::class.java) })
         }
     }
 
-    fun listenItems(userId: String, maletaId: String, onUpdate: (List<Item>) -> Unit): ListenerRegistration {
-        return maletaItems(userId, maletaId).addSnapshotListener { snapshot, _ ->
+    fun listenItems(
+        userId: String,
+        maletaId: String,
+        onUpdate: (List<Item>) -> Unit,
+        onError: (Exception) -> Unit = {}
+    ): ListenerRegistration {
+        return maletaItems(userId, maletaId).addSnapshotListener { snapshot, error ->
+            if (error != null) { onError(error); return@addSnapshotListener }
             if (snapshot == null) return@addSnapshotListener
             onUpdate(snapshot.documents.mapNotNull { it.toObject(Item::class.java) })
         }
@@ -47,14 +58,23 @@ class FirestoreDatabase {
             )
         )
 
-    fun deleteAllItemsAndMaleta(userId: String, maletaId: String) {
+    fun deleteAllItemsAndMaleta(
+        userId: String,
+        maletaId: String,
+        onSuccess: () -> Unit = {},
+        onError: () -> Unit = {}
+    ) {
         val maletaRef = userMaletas(userId).document(maletaId)
-        maletaItems(userId, maletaId).get().addOnSuccessListener { snapshot ->
-            val batch = db.batch()
-            snapshot.documents.forEach { batch.delete(it.reference) }
-            batch.delete(maletaRef)
-            batch.commit()
-        }
+        maletaItems(userId, maletaId).get()
+            .addOnSuccessListener { snapshot ->
+                val batch = db.batch()
+                snapshot.documents.forEach { batch.delete(it.reference) }
+                batch.delete(maletaRef)
+                batch.commit()
+                    .addOnSuccessListener { onSuccess() }
+                    .addOnFailureListener { onError() }
+            }
+            .addOnFailureListener { onError() }
     }
 
     fun addItem(userId: String, maletaId: String, item: Item): Task<DocumentReference> =

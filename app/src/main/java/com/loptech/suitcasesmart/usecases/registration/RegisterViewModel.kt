@@ -28,8 +28,6 @@ class RegisterViewModel: ViewModel() {
             R.string.error_incorrectly_repeated_password
         }else if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
             R.string.error_not_a_valid_email
-        } else if(password != confirmPassword) {
-            R.string.error_incorrectly_repeated_password
         } else null
 
         errorMessage?.let {
