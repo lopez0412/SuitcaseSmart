@@ -1,5 +1,5 @@
 # SuitcaseSmart — Sync Android → iOS
-**Última actualización:** Marzo 2026
+**Última actualización:** Junio 2026
 
 Este documento describe el estado actual de Android para que iOS vaya a la par.
 
@@ -32,8 +32,9 @@ Este documento describe el estado actual de Android para que iOS vaya a la par.
 | Stats en Perfil (maletas · items · % listo) | ✅ | ❌ pendiente |
 | Toggle modo oscuro (persistido) | ✅ | ❌ pendiente |
 | Tipografía custom (Sora + DM Sans) | ✅ | ❌ pendiente |
+| Empty state en Home (sin maletas) | ✅ | ❌ pendiente |
 
-**Android MVP: completo. Pendiente en iOS: 12 features.**
+**Android MVP: completo. Pendiente en iOS: 13 features.**
 
 ---
 
@@ -54,7 +55,7 @@ users/{userId}/maletas/{maletaId}/items/{itemId}
   notas:     String  (opcional, puede estar vacío)
 ```
 
-> **Nota:** Firestore no elimina subcolecciones en cascada. Al eliminar una maleta, sus items quedan huérfanos en la base de datos pero el usuario no puede acceder a ellos. Aceptable para MVP.
+> **Nota:** Al eliminar una maleta se hace un batch delete de todos sus items y luego el documento de la maleta — no quedan huérfanos. Si la operación falla, el ViewModel muestra un error al usuario.
 
 ---
 
@@ -150,6 +151,9 @@ Fila de 3 columnas dentro del header navy:
 ### Editar item
 - **Gesto:** long press en el card del item.
 - **UX:** abre el mismo bottom sheet de "Agregar Item" pre-relleno. Título "Editar Item". Se preservan `estado` y `notas` — solo se actualizan `nombre`, `categoria`, `cantidad`.
+
+### Empty state en Home
+Cuando el usuario no tiene maletas creadas, en lugar de la lista vacía se muestra centrado en pantalla: ícono de maleta (`Luggage` / `suitcase.rolling`) en tamaño grande (64pt) con opacidad baja, y debajo el texto "¡Agrega tu primera maleta!" en `titleMedium` con `onSurfaceVariant` al 50% de opacidad. El FAB sigue visible para que el usuario pueda crear su primera maleta. Los listeners de Firestore incluyen manejo de error — si falla la conexión, el ViewModel expone el error para mostrarlo al usuario.
 
 ### Checklist (tab en bottom nav)
 Tab independiente en la barra de navegación inferior (entre Maletas y Perfil).
