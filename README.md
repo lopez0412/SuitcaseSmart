@@ -5,7 +5,8 @@
 A travel packing app with a suitcase-centric model — you organize 
 around your bags, not your trips. Available on Google Play Store.
 
-[![Get it on Google Play](https://img.shields.io/badge/Google_Play-Download-3DDC84?style=flat&logo=google-play&logoColor=white)]([https://play.google.com/store/apps/details?id=com.lopeztechnologies.suitcasesmart](https://play.google.com/store/apps/details?id=com.loptech.suitcasesmart))
+[![Get it on Google Play](https://img.shields.io/badge/Google_Play-Download-3DDC84?style=flat&logo=google-play&logoColor=white)](https://play.google.com/store/apps/details?id=com.loptech.suitcasesmart)
+
 
 ## The Problem
 
@@ -66,4 +67,4 @@ Full PRD available in [`PRD-SuitcaseSmart.md`](./PRD-SuitcaseSmart.md)
 **Alejandro Lopez** — Senior Android & iOS Developer  
 Lopez Technologies · El Salvador  
 [GitHub](https://github.com/lopez0412) · 
-[Play Store]([https://play.google.com/store/apps/details?id=com.lopeztechnologies.suitcasesmart](https://play.google.com/store/apps/details?id=com.loptech.suitcasesmart))
+[Play Store](https://play.google.com/store/apps/details?id=com.loptech.suitcasesmart)
