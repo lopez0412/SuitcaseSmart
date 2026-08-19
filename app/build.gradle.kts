@@ -31,7 +31,7 @@ android {
     defaultConfig {
         applicationId = "com.loptech.suitcasesmart"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 11
         versionName = "1.0.9"
 
