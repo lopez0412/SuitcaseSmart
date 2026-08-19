@@ -88,7 +88,8 @@ class FirestoreDatabase {
             mapOf(
                 "nombre" to item.nombre,
                 "categoria" to item.categoria,
-                "cantidad" to item.cantidad
+                "cantidad" to item.cantidad,
+                "notas" to item.notas
             )
         )
 

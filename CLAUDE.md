@@ -1,71 +1,94 @@
 # SuitcaseSmart — Contexto del Proyecto
 
-## ¿Qué es esto?
-App móvil para organizar maletas de viaje. La **maleta es la unidad central** — no el viaje.
-El usuario crea maletas, agrega items, y durante el viaje marca qué empacó y qué ya usó.
+## Stack real
+- **Android nativo** con Kotlin + Jetpack Compose
+- **Auth:** Firebase Authentication (email/password + Google Sign-In)
+- **DB:** Cloud Firestore (listeners en tiempo real)
+- **Push:** Firebase Cloud Messaging
+- **Config remota:** Firebase Remote Config
+- **Navegación:** Navigation Compose con bottom nav + nested graphs
+- **Estado:** MVVM + StateFlow (sin DI/Hilt)
 
-## Estado actual
-- ✅ Proyecto Flutter creado (Android + iOS)
-- ✅ Firebase Auth implementado (email, Google, Apple)
-- ✅ Firestore configurado (base de datos limpia, lista para usar)
-- 🔲 CRUD de maletas — por implementar
-- 🔲 CRUD de items — por implementar
-- 🔲 Sistema de estados de items — por implementar
+## Versiones actuales
+- compileSdk: 36 | minSdk: 24 | targetSdk: 35
+- versionCode: 10 | versionName: 1.0.8
+- Kotlin: 2.3.20 | Compose BOM: 2026.03.00 | AGP: 9.1.0
+- Firebase BOM: 34.11.0 | Navigation Compose: 2.8.8 | Coil: 3.4.0
+- Java/JVM target: 17
 
-## Stack
-- **Mobile:** Flutter (Android + iOS)
-- **Auth:** Firebase Authentication
-- **DB:** Cloud Firestore
-- **Estado:** por definir (preferencia: Riverpod o BLoC)
+## Estado actual del MVP — COMPLETO
+- ✅ Auth email + Google Sign-In
+- ✅ Onboarding + Splash
+- ✅ CRUD maletas (swipe-to-delete, long-press para editar)
+- ✅ CRUD items (swipe-to-delete, long-press para editar)
+- ✅ Estados de items: por_empacar → empacado → usado
+- ✅ Progreso de empaque por maleta (barra + contador en tiempo real)
+- ✅ Modo checklist (filtro items "por empacar")
+- ✅ ProfileScreen con foto, nombre, email, sign-out
+- ✅ Dark mode toggle persistido en SharedPreferences
+- ✅ Firestore listeners en tiempo real (addSnapshotListener)
+
+## Estructura de archivos clave
+```
+app/src/main/java/com/loptech/suitcasesmart/
+├── MainActivity.kt                          # NavHost + bottom nav shell
+├── MyApplication.kt
+├── MyFirebaseMessagingService.kt
+├── firebase/
+│   ├── FirestoreDatabase.kt                 # Toda la lógica Firestore
+│   └── GoogleAuthUiClient.kt               # Google Sign-In via CredentialManager
+├── model/domain/
+│   └── Viaje.kt                             # Maleta + Item (con @DocumentId)
+├── navigation/AppScreens.kt                 # Rutas selladas
+├── provider/preferences/PreferencesManager.kt
+├── ui/theme/                                # Color.kt, Theme.kt, Type.kt
+└── usecases/
+    ├── home/Home.kt + HomeViewModel.kt      # Pantalla "Mis Maletas"
+    ├── TravelDetail/SuitcaseDetail.kt + SuitcaseDetailViewModel.kt
+    ├── checklist/ChecklistScreen.kt
+    ├── profile/ProfileScreen.kt
+    ├── login/ | registration/ | onboarding/ | launch/
+    └── common/
+        ├── MaletaDefaults.kt                # Colores/íconos por tipo
+        ├── rows/MaletaRow.kt
+        ├── views/AddMaletaSheetForm.kt      # Form agregar/editar maleta
+        └── views/AddSuitcaseSheetForm.kt    # Form agregar/editar item
+```
 
 ## Estructura de Firestore
 ```
-users/
-  {userId}/
-    maletas/
-      {maletaId}/
-        nombre: string
-        tipo: "carry-on" | "grande" | "mochila" | "personal"
-        color: string (hex)
-        icono: string
-        creadaEn: timestamp
-        items/
-          {itemId}/
-            nombre: string
-            categoria: "ropa" | "electronica" | "documentos" | "higiene" | "medicamentos" | "otros"
-            cantidad: number
-            estado: "por_empacar" | "empacado" | "usado"
-            notas: string (opcional)
-            creadoEn: timestamp
+users/{userId}/
+  maletas/{maletaId}/
+    nombre: string
+    tipo: "carry-on" | "grande" | "mochila" | "personal"
+    color: string (hex)
+    icono: string
+    items/{itemId}/
+      nombre: string
+      categoria: "ropa" | "electronica" | "documentos" | "higiene" | "medicamentos" | "otros"
+      cantidad: number
+      estado: "por_empacar" | "empacado" | "usado"
+      notas: string
 ```
 
-## Flujo principal
-Mis Maletas → Crear maleta (tipo + nombre) → Agregar items (nombre + categoría + cantidad) → Durante el viaje: marcar Empacado → marcar Usado
+## Decisiones de arquitectura
+- `@DocumentId val id: String = ""` en modelos (no `@get:Exclude`)
+- `HomeViewModel` mantiene `itemListeners: Map<String, ListenerRegistration>` — uno por maleta
+- `FirestoreDatabase` tiene helpers privados `userMaletas()` y `maletaItems()`
+- `deleteMaleta` usa batch delete (items + doc) para evitar huérfanos
+- Sign-out navega con `popUpTo(0) { inclusive = true }` para limpiar el back stack
+- ViewModels cancelan sus listeners en `onCleared()`
 
-## Pantallas MVP
-1. **Mis Maletas** — lista de maletas con barra de progreso de empaque
-2. **Detalle de Maleta** — items agrupados por categoría o estado
-3. **Agregar/Editar Item** — bottom sheet modal
-4. **Checklist** — vista filtrada de items "por empacar"
-5. **Perfil** — datos del usuario y cerrar sesión
+## Comandos frecuentes
+```bash
+# Build debug
+./gradlew assembleDebug
 
-## Estados de un item
-`por_empacar` → `empacado` → `usado`
+# Build release AAB (para Play Store)
+./gradlew bundleRelease
 
-## Decisiones de arquitectura importantes
-- NO hay colección de "viajes" en Firestore — las maletas viven directo bajo el usuario
-- Si en el futuro se agrega el concepto de viaje, se añade un campo `viajeId` opcional en la maleta sin romper nada
-- Offline-first: aprovechar el soporte offline nativo de Firestore
-- Dark mode desde el inicio
+# Verificar estado del proyecto
+.\scripts\check-status.ps1
+```
 
-## Qué NO va en el MVP (backlog)
-- Compartir maleta con otro usuario
-- Plantillas de maletas
-- Historial de viajes
-- Fotos de items
-- Peso estimado
-- Notificaciones
-- Concepto de Viaje como agrupador
-
-## Por dónde empezar
-Implementar pantalla **Mis Maletas** con CRUD completo de maletas. Eso desbloquea todo lo demás.
+## Roadmap → ver ROADMAP.md

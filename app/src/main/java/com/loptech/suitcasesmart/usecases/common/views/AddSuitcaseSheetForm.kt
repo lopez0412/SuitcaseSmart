@@ -41,6 +41,7 @@ fun AddItemSheetForm(
     var nombre by remember { mutableStateOf(initialItem?.nombre ?: "") }
     var cantidad by remember { mutableStateOf(initialItem?.cantidad?.toString() ?: "1") }
     var categoria by remember { mutableStateOf(initialItem?.categoria ?: "") }
+    var notas by remember { mutableStateOf(initialItem?.notas ?: "") }
     var categoriaExpanded by remember { mutableStateOf(false) }
     var submitted by remember { mutableStateOf(false) }
     val categorias = listOf("ropa", "electronica", "documentos", "higiene", "medicamentos", "otros")
@@ -119,6 +120,17 @@ fun AddItemSheetForm(
             modifier = Modifier.fillMaxWidth()
         )
 
+        Spacer(modifier = Modifier.height(4.dp))
+
+        OutlinedTextField(
+            value = notas,
+            onValueChange = { notas = it },
+            label = { Text("Notas (opcional)") },
+            modifier = Modifier.fillMaxWidth(),
+            minLines = 2,
+            maxLines = 4
+        )
+
         Row(
             modifier = Modifier
                 .padding(vertical = 8.dp)
@@ -131,7 +143,8 @@ fun AddItemSheetForm(
                         Item(
                             nombre = nombre,
                             categoria = categoria,
-                            cantidad = cantidad.toIntOrNull() ?: 1
+                            cantidad = cantidad.toIntOrNull() ?: 1,
+                            notas = notas.trim()
                         )
                     )
                 }
