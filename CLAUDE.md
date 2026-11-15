@@ -10,8 +10,8 @@
 - **Estado:** MVVM + StateFlow (sin DI/Hilt)
 
 ## Versiones actuales
-- compileSdk: 36 | minSdk: 24 | targetSdk: 35
-- versionCode: 10 | versionName: 1.0.8
+- compileSdk: 36 | minSdk: 24 | targetSdk: 36
+- versionCode: 11 | versionName: 1.0.9
 - Kotlin: 2.3.20 | Compose BOM: 2026.03.00 | AGP: 9.1.0
 - Firebase BOM: 34.11.0 | Navigation Compose: 2.8.8 | Coil: 3.4.0
 - Java/JVM target: 17
@@ -24,6 +24,8 @@
 - ✅ Estados de items: por_empacar → empacado → usado
 - ✅ Progreso de empaque por maleta (barra + contador en tiempo real)
 - ✅ Modo checklist (filtro items "por empacar")
+- ✅ Confirmación al borrar maleta/item (AlertDialog)
+- ✅ Notas en items + timestamps creadaEn/creadoEn (v1.0.9)
 - ✅ ProfileScreen con foto, nombre, email, sign-out
 - ✅ Dark mode toggle persistido en SharedPreferences
 - ✅ Firestore listeners en tiempo real (addSnapshotListener)

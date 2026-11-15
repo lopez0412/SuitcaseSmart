@@ -1,4 +1,4 @@
-# check-status.ps1 — Estado actual del proyecto SuitcaseSmart
+﻿# check-status.ps1 — Estado actual del proyecto SuitcaseSmart
 # Uso: .\scripts\check-status.ps1
 
 $root = Split-Path $PSScriptRoot -Parent

@@ -31,7 +31,7 @@
 ### TODO
 - [ ] **Búsqueda de items** — barra de búsqueda en `SuitcaseDetail` para filtrar por nombre
 - [ ] **Ordenamiento** — toggle "agrupar por categoría" vs "agrupar por estado" en `SuitcaseDetail`
-- [ ] **Confirmación al borrar** — diálogo de confirmación antes de eliminar maleta o item
+- [x] **Confirmación al borrar** — diálogo de confirmación antes de eliminar maleta o item
 - [ ] **Swipe para empacar** — swipe derecho = marcar como empacado directamente en la lista
 - [ ] **Empty state mejorado** — mensaje motivacional en Checklist cuando todos los items están empacados
 - [ ] **Contador en bottom nav** — badge con cantidad de items pendientes en ícono de Checklist
