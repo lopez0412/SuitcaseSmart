@@ -350,7 +350,8 @@ fun SuitcaseDetail(
                                 val updated = editingItem.copy(
                                     nombre = formItem.nombre,
                                     categoria = formItem.categoria,
-                                    cantidad = formItem.cantidad
+                                    cantidad = formItem.cantidad,
+                                    notas = formItem.notas
                                 )
                                 viewmodel.updateItem(userData.userId.toString(), maletaId, updated)
                                 scope.launch { sheetState.hide() }.invokeOnCompletion { showSheet = false; itemToEdit = null }
