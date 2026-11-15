@@ -11,7 +11,7 @@
 
 ## Versiones actuales
 - compileSdk: 36 | minSdk: 24 | targetSdk: 36
-- versionCode: 11 | versionName: 1.0.9
+- versionCode: 12 | versionName: 1.0.10
 - Kotlin: 2.3.20 | Compose BOM: 2026.03.00 | AGP: 9.1.0
 - Firebase BOM: 34.11.0 | Navigation Compose: 2.8.8 | Coil: 3.4.0
 - Java/JVM target: 17
