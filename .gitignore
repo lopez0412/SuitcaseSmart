@@ -21,3 +21,7 @@ keystore/
 *.pem
 private_key*
 # End of keystore ignores
+
+# Builds firmados (se suben a Play Console, no al repo)
+*.aab
+*.apk
